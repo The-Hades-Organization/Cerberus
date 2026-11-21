@@ -1,0 +1,23 @@
+[package]
+name = "cerberus-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+name = "cerberus_app"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cerberus-app"
+path = "src/main.rs"
+
+[dependencies]
+cerberus-core = { path = "../cerberus-core" }
+gpui.workspace = true
+gpui_platform.workspace = true
+gpui-component.workspace = true
+
+[lints]
+workspace = true

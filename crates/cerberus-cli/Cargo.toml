@@ -1,0 +1,17 @@
+[package]
+name = "cerberus-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "cerberus"
+path = "src/main.rs"
+
+[dependencies]
+cerberus-core = { path = "../cerberus-core" }
+clap.workspace = true
+
+[lints]
+workspace = true
