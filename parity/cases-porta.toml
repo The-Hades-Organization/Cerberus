@@ -1,0 +1,601 @@
+# Matriz de paridade da Porta: `hades cerberus-check porta/<guarda>` (TS, Hades-Skill) contra `cerberus check
+# porta/<guarda>`. O lado TS passa por parity/ts-check.ts, que troca `check` por `cerberus-check` e põe CERBERUS_SKILL.
+# Origem: os 66 casos do golden legado (loop/test/golden/legado/cerberus-porta-legado.json,
+# loop/test/ts/cerberus-porta-legado.test.ts). O repositório de cada caso é montado no HOME por parity/setup/porta-*.sh
+# (o `cwd` escolhe qual), e as respostas de `gh`/`devtunnel` vêm de $HOME/fix, lidas pelos stubs de parity/stubs.
+# Caminhos do contexto são relativos ao repositório do caso; o intervalo do segredo-diff é HEAD~1..HEAD.
+
+[[case]]
+id = "porta.remote-push.destacado"
+argv = ["check", "porta/remote-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-remote.sh"
+cwd = "destacado"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.remote-push.sem-remote"
+argv = ["check", "porta/remote-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-remote.sh"
+cwd = "sem-remote"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.remote-push.pushremote-no-push"
+argv = ["check", "porta/remote-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-remote.sh"
+cwd = "pushremote"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.remote-push.pushurl-no-push"
+argv = ["check", "porta/remote-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-remote.sh"
+cwd = "pushurl"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.remote-push.remote-inexistente"
+argv = ["check", "porta/remote-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-remote.sh"
+cwd = "fantasma"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.remote-push.url-de-push"
+argv = ["check", "porta/remote-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-remote.sh"
+cwd = "ok"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.sem-pr"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream.sh"
+cwd = "up-feature"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.upstream-igual"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream.sh"
+cwd = "up-feature"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"head\":\"feature\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.upstream-outra"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream.sh"
+cwd = "up-outra"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"head\":\"feature\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.sem-upstream-mesmo-nome"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream.sh"
+cwd = "solto"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"head\":\"feature\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.sem-upstream-outro-nome"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream.sh"
+cwd = "solto"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"head\":\"x\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.pr-do-contexto"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream-pr.sh"
+cwd = "solto"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"pr\":\"7\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.pr-sem-resposta"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream.sh"
+cwd = "solto"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"pr\":\"7\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.upstream-push.destacado"
+argv = ["check", "porta/upstream-push"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-upstream.sh"
+cwd = "destacado"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"head\":\"feature\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.branch-protegida.tronco"
+argv = ["check", "porta/branch-protegida"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-branch.sh"
+cwd = "main"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.branch-protegida.protegida"
+argv = ["check", "porta/branch-protegida"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-branch.sh"
+cwd = "release"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.branch-protegida.desprotegida"
+argv = ["check", "porta/branch-protegida"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-branch.sh"
+cwd = "feature"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.branch-protegida.api-falha"
+argv = ["check", "porta/branch-protegida"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-branch.sh"
+cwd = "falha"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.branch-protegida.origin-sem-slug"
+argv = ["check", "porta/branch-protegida"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-branch.sh"
+cwd = "solto-origin"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.branch-protegida.destino-do-contexto"
+argv = ["check", "porta/branch-protegida"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-branch.sh"
+cwd = "solto"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"head\":\"develop\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.branch-protegida.destacado"
+argv = ["check", "porta/branch-protegida"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-branch.sh"
+cwd = "destacado"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.conta-gh.sem-perfil"
+argv = ["check", "porta/conta-gh"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-conta.sh"
+cwd = "sem-perfil"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.conta-gh.conta-igual"
+argv = ["check", "porta/conta-gh"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-conta-dev.sh"
+cwd = "acme-1"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.conta-gh.conta-diferente"
+argv = ["check", "porta/conta-gh"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-conta-outro.sh"
+cwd = "acme-2"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.conta-gh.gh-sem-resposta"
+argv = ["check", "porta/conta-gh"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-conta.sh"
+cwd = "acme-2"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.conta-gh.token-ausente"
+argv = ["check", "porta/conta-gh"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-conta.sh"
+cwd = "acme-3"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.conta-gh.token-presente"
+argv = ["check", "porta/conta-gh"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-conta-dev.sh"
+cwd = "acme-4"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}", TOKEN_DO_TESTE = "t" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.nome-dominio.fora-do-nucleo"
+argv = ["check", "porta/nome-dominio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-nome.sh"
+cwd = "solto"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.nome-dominio.guarda-limpa"
+argv = ["check", "porta/nome-dominio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-nome.sh"
+cwd = "limpo"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.nome-dominio.acha-termo"
+argv = ["check", "porta/nome-dominio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-nome.sh"
+cwd = "termo"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.nome-dominio.saiu-1-sem-texto"
+argv = ["check", "porta/nome-dominio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-nome.sh"
+cwd = "saiu-1"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.nome-dominio.sem-perfil"
+argv = ["check", "porta/nome-dominio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-nome.sh"
+cwd = "sem-perfil"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.nome-dominio.ok-sem-saida"
+argv = ["check", "porta/nome-dominio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-nome.sh"
+cwd = "vazio"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.sem-registro"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../nao-existe.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.integro"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-ok.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.sem-aprovador"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-sem-by.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.aprovador-texto"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-by-texto.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.so-estado-atual-mudou"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-estado.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.plano-alterado"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-mudou.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.plano-sumiu"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-sumiu.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.registro-ilegivel"
+pending = "o texto do erro do parser de JSON é do Bun no TS e do serde no Rust; o resto do veredito é igual (o golden legado também normaliza esse trecho)"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-ilegivel.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.registro-sem-sha"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-sem-sha.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.plano-aprovado.raiz-de-trabalho"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.arquivo-com-token"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"texto\":\"../c.txt\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.arquivo-limpo"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"arquivo\":\"../l.txt\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.alvo-inexistente"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"arquivo\":\"../nada\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.pasta-sem-git"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"arquivo\":\"../pasta\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.valor-de-exemplo"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"texto\":\"../e.txt\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.atribuicao-e-url"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"texto\":\"../a.txt\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.sem-base"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "solta"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.intervalo-vaza"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "vaza"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"range\":\"HEAD~1..HEAD\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.intervalo-limpo"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "limpo"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"range\":\"HEAD~1..HEAD\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.intervalo-invalido"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"range\":\"nao..existe\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.segredo-diff.ultima-tag"
+argv = ["check", "porta/segredo-diff"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-segredo.sh"
+cwd = "tag"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.sem-host"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.lista-vazia"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"a.devtunnels.ms\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.host-fora"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"evil.example.com\",\"acesso\":\"autenticado\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.autenticado"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"https://a.devtunnels.ms/x\",\"acesso\":\"autenticado\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.anonimo"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"a.devtunnels.ms\",\"acesso\":\"anonimo\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.sem-acesso"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"a.devtunnels.ms\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.lido-anonimo"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"a.devtunnels.ms\",\"tunel\":\"t1\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.lido-autenticado"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel-tenant.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"a.devtunnels.ms\",\"tunel\":\"t1\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.devtunnel-falha"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel-erro.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"a.devtunnels.ms\",\"tunel\":\"t1\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.curinga-interrogacao"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "a?.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"a1.devtunnels.ms\",\"acesso\":\"autenticado\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.curinga-seq"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "[ab].x.io", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"b.x.io\",\"acesso\":\"autenticado\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "porta.tunel-acesso.curinga-seq-negada"
+argv = ["check", "porta/tunel-acesso"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/porta-tunel.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "[!ab].x.io", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"host\":\"c.x.io\",\"acesso\":\"autenticado\"}" }
+compare = ["stdout", "stderr", "exit"]

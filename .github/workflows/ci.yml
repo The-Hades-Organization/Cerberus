@@ -83,6 +83,12 @@ jobs:
           --cases parity/cases-registro-json.toml
           --ts "$RUNNER_TEMP/skill-json"
           --rust target/debug/cerberus
+      - name: Matriz da Porta
+        run: >
+          "$RUNNER_TEMP/hades-parity/bin/hades-parity" run
+          --cases parity/cases-porta.toml
+          --ts "$RUNNER_TEMP/skill"
+          --rust target/debug/cerberus
       - name: Concorrência TS x Rust
         run: parity/concorrencia.sh "$RUNNER_TEMP/skill" target/debug/cerberus
 
