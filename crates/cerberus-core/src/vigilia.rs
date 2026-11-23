@@ -1,9 +1,10 @@
 //! Infraestrutura da Vigília (`src/lib/cerberus-vigilia.ts`): leitura dos alvos no registro do orquestrador, blocos do
 //! report e o veredito por achados. Cada guarda junta achados (nível, conferido, onde); o veredito é o pior nível.
 //! Falha ao conferir vira `aviso` com o que faltou, nunca `ok` calado. As guardas de auditoria moram em
-//! [`auditoria`]; a coerência (plano, registro) chega depois.
+//! [`auditoria`]; as de coerência (registro, plano), em [`coerencia`].
 
 pub mod auditoria;
+pub mod coerencia;
 
 use std::cell::OnceCell;
 use std::collections::BTreeSet;
@@ -489,7 +490,7 @@ pub(crate) fn em_cada_repo(root: &str, sub: &str) -> Vec<String> {
 }
 
 /// `jsonsIn` (`src/lib/cerberus-vigilia.ts:193`): `*.json` direto na pasta, em ordem; pasta ausente dá lista vazia.
-fn jsons_in(dir: &str) -> Vec<String> {
+pub(crate) fn jsons_in(dir: &str) -> Vec<String> {
     entradas(dir, true)
         .into_iter()
         .filter(|n| n.ends_with(".json"))
@@ -889,10 +890,34 @@ pub const AUDITORIA: [(&str, Entrada); 6] = [
     ),
 ];
 
+/// `COERENCIA` (`src/lib/cerberus-vigilia.ts:1096`), na ordem do TS.
+pub const COERENCIA: [(&str, Entrada); 2] = [
+    (
+        "registro",
+        Entrada {
+            guarda: coerencia::registro,
+            ok: "registro confere com git, herdr e GitHub",
+        },
+    ),
+    (
+        "plano",
+        Entrada {
+            guarda: coerencia::plano,
+            ok: "Estado atual do plano confere com o registro",
+        },
+    ),
+];
+
 /// O uso que `auditoria.py` imprimia para guarda desconhecida (`usageOf`, `src/commands/cerberus-check.ts:24`).
 pub fn uso_auditoria() -> String {
     let nomes: Vec<&str> = AUDITORIA.iter().map(|(n, _)| *n).collect();
     format!("uso: auditoria.py {}", nomes.join("|"))
+}
+
+/// O uso que `coerencia.py` imprimia para guarda desconhecida (`usageOf`, `src/commands/cerberus-check.ts:28`).
+pub fn uso_coerencia() -> String {
+    let nomes: Vec<&str> = COERENCIA.iter().map(|(n, _)| *n).collect();
+    format!("uso: coerencia.py {}", nomes.join("|"))
 }
 
 /// `rodarVigilia` (`src/lib/cerberus-vigilia.ts:1101`): `None` para guarda fora da tabela.

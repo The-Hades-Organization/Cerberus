@@ -422,7 +422,7 @@ fn rodar(argv: &[String], op: &Opcoes, s: &mut Saida) -> Result<i32, Erro> {
 
 const USO_CHECK: &str = "uso: hades cerberus-check <porta/<guarda> | limiar <guarda> | vigilia/auditoria <guarda> | vigilia/coerencia <guarda>>  (ambiente: CERBERUS_DIR, CERBERUS_SKILL, CERBERUS_MOMENTO, CERBERUS_CTX)";
 
-/// `evaluate` (`src/commands/cerberus-check.ts:12`): a Porta, o Limiar e a auditoria da Vigília portados; o resto
+/// `evaluate` (`src/commands/cerberus-check.ts:12`): a Porta, o Limiar e a Vigília (auditoria e coerência); o resto
 /// responde o uso.
 fn avalia(args: &[String], ce: &CheckEnv) -> Option<cerberus_core::check::CheckVerdict> {
     let alvo = args.first().map(String::as_str).unwrap_or("");
@@ -441,6 +441,9 @@ fn avalia(args: &[String], ce: &CheckEnv) -> Option<cerberus_core::check::CheckV
         }
         "vigilia" if id == Some("auditoria") && args.len() == 2 => {
             cerberus_core::vigilia::rodar_vigilia(&cerberus_core::vigilia::AUDITORIA, &args[1], ce)
+        }
+        "vigilia" if id == Some("coerencia") && args.len() == 2 => {
+            cerberus_core::vigilia::rodar_vigilia(&cerberus_core::vigilia::COERENCIA, &args[1], ce)
         }
         _ => None,
     }
@@ -462,6 +465,8 @@ fn check(args: &[String], ce: &CheckEnv, out: &mut dyn Write, err: &mut dyn Writ
                 s.warn(cerberus_core::limiar::USO);
             } else if alvo == "vigilia/auditoria" {
                 s.warn(&cerberus_core::vigilia::uso_auditoria());
+            } else if alvo == "vigilia/coerencia" {
+                s.warn(&cerberus_core::vigilia::uso_coerencia());
             } else {
                 s.warn(USO_CHECK);
             }

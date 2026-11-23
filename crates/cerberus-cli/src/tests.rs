@@ -322,7 +322,7 @@ fn check_sem_guarda_portada_responde_o_uso() {
         &[][..],
         &["limiar/x"][..],
         &["porta/fantasma"][..],
-        &["vigilia/coerencia", "registro"][..],
+        &["vigilia/outra", "registro"][..],
     ] {
         let args: Vec<String> = args.iter().map(|a| (*a).to_string()).collect();
         let (mut out, mut err) = (Vec::new(), Vec::new());
@@ -347,6 +347,25 @@ fn check_da_auditoria_sem_guarda_responde_o_uso_dela() {
         assert_eq!(
             String::from_utf8_lossy(&err).trim_end(),
             "uso: auditoria.py status|gates|capturas|commits|escopo|perguntas"
+        );
+    }
+}
+
+#[test]
+fn check_da_coerencia_sem_guarda_responde_o_uso_dela() {
+    let ce = CheckEnv::default();
+    for args in [
+        &["vigilia/coerencia"][..],
+        &["vigilia/coerencia", "status"][..],
+        &["vigilia/coerencia", "registro", "x"][..],
+    ] {
+        let args: Vec<String> = args.iter().map(|a| (*a).to_string()).collect();
+        let (mut out, mut err) = (Vec::new(), Vec::new());
+        assert_eq!(check(&args, &ce, &mut out, &mut err), 2, "{args:?}");
+        assert!(out.is_empty());
+        assert_eq!(
+            String::from_utf8_lossy(&err).trim_end(),
+            "uso: coerencia.py registro|plano"
         );
     }
 }

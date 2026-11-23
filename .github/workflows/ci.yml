@@ -121,6 +121,10 @@ jobs:
         env:
           # os casos de bwrap não pulam no CI
           CERBERUS_BWRAP_OBRIGATORIO: '1'
+      - name: Bench de partida (falha acima de 50 ms)
+        run: |
+          cargo build --release --locked -p cerberus-cli
+          scripts/bench-partida.sh target/release/cerberus 50 15
 
   app:
     name: App (gpui)
