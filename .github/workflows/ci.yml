@@ -96,14 +96,14 @@ jobs:
           --cases parity/cases-porta.toml
           --ts "$RUNNER_TEMP/skill"
           --rust target/debug/cerberus
+      - name: Estados de plugin do Limiar
+        run: bun parity/limiar-estado.ts "$RUNNER_TEMP/skill" parity/gerado/limiar
       - name: Matriz com o erro do parser normalizado
         run: >
           "$RUNNER_TEMP/hades-parity/bin/hades-parity" run
           --cases parity/cases-parser.toml
           --ts "$RUNNER_TEMP/skill"
           --rust parity/rust-parser.sh
-      - name: Estados de plugin do Limiar
-        run: bun parity/limiar-estado.ts "$RUNNER_TEMP/skill" parity/gerado/limiar
       - name: Matriz do Limiar e do Ensaio
         run: >
           "$RUNNER_TEMP/hades-parity/bin/hades-parity" run
