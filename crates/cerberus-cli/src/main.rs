@@ -422,7 +422,8 @@ fn rodar(argv: &[String], op: &Opcoes, s: &mut Saida) -> Result<i32, Erro> {
 
 const USO_CHECK: &str = "uso: hades cerberus-check <porta/<guarda> | limiar <guarda> | vigilia/auditoria <guarda> | vigilia/coerencia <guarda>>  (ambiente: CERBERUS_DIR, CERBERUS_SKILL, CERBERUS_MOMENTO, CERBERUS_CTX)";
 
-/// `evaluate` (`src/commands/cerberus-check.ts:12`): a Porta e o Limiar portados; a Vigília responde o uso.
+/// `evaluate` (`src/commands/cerberus-check.ts:12`): a Porta, o Limiar e a auditoria da Vigília portados; o resto
+/// responde o uso.
 fn avalia(args: &[String], ce: &CheckEnv) -> Option<cerberus_core::check::CheckVerdict> {
     let alvo = args.first().map(String::as_str).unwrap_or("");
     let arg = args.get(1).map(String::as_str);
@@ -438,6 +439,9 @@ fn avalia(args: &[String], ce: &CheckEnv) -> Option<cerberus_core::check::CheckV
         "limiar" if !(id.is_some_and(|i| !i.is_empty()) || extra) => {
             cerberus_core::limiar::rodar(arg.unwrap_or(""), ce)
         }
+        "vigilia" if id == Some("auditoria") && args.len() == 2 => {
+            cerberus_core::vigilia::rodar_vigilia(&cerberus_core::vigilia::AUDITORIA, &args[1], ce)
+        }
         _ => None,
     }
 }
@@ -445,6 +449,7 @@ fn avalia(args: &[String], ce: &CheckEnv) -> Option<cerberus_core::check::CheckV
 /// `cerberusCheckCommand` (`src/commands/cerberus-check.ts:32`): roda uma guarda portada e imprime o veredito numa
 /// linha JSON; sem veredito, o uso do alvo (`usageOf`, `:25`) e saída 2.
 fn check(args: &[String], ce: &CheckEnv, out: &mut dyn Write, err: &mut dyn Write) -> i32 {
+    let alvo = args.first().map(String::as_str).unwrap_or("");
     let veredito = avalia(args, ce);
     let mut s = Saida { out, err };
     match veredito {
@@ -453,12 +458,13 @@ fn check(args: &[String], ce: &CheckEnv, out: &mut dyn Write, err: &mut dyn Writ
             OK
         }
         None => {
-            let uso = if args.first().map(String::as_str) == Some("limiar") {
-                cerberus_core::limiar::USO
+            if alvo == "limiar" {
+                s.warn(cerberus_core::limiar::USO);
+            } else if alvo == "vigilia/auditoria" {
+                s.warn(&cerberus_core::vigilia::uso_auditoria());
             } else {
-                USO_CHECK
-            };
-            s.warn(uso);
+                s.warn(USO_CHECK);
+            }
             USO
         }
     }

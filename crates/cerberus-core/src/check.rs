@@ -122,7 +122,7 @@ fn parse_ctx(text: Option<&str>) -> IndexMap<String, String> {
 
 /// `.slice(0, max)` do JS: conta unidades UTF-16. Um caractere fora do BMP cortado ao meio sai inteiro de fora
 /// (o JS deixaria meio par substituto, que não existe em `String`).
-pub(crate) fn js_slice(text: &str, max: usize) -> String {
+pub fn js_slice(text: &str, max: usize) -> String {
     let mut used = 0;
     let mut out = String::new();
     for c in text.chars() {
