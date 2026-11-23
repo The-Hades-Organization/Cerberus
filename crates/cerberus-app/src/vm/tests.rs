@@ -51,8 +51,6 @@ fn telas_na_ordem_do_trilho() {
     }
     assert_eq!(Tela::de_nome("modos"), Some(Tela::Modos));
     assert_eq!(Tela::de_nome("x"), None);
-    assert!(Tela::Excecoes.pendente() && Tela::Testar.pendente() && Tela::Configuracoes.pendente());
-    assert!(!Tela::Vereditos.pendente());
 }
 
 #[test]
@@ -239,4 +237,147 @@ fn modos_e_rodapes() {
     assert_eq!(rodape_dos_vereditos(3), "3 vereditos");
     assert_eq!(rodape_das_guardas(2, 0), "2 guardas");
     assert_eq!(rodape_das_guardas(1, 1), "1 guarda · 1 erro");
+}
+
+fn excecao(v: Value) -> cerberus_core::modelo::Excecao {
+    cerberus_core::modelo::Excecao(v)
+}
+
+#[test]
+fn linha_de_excecao_aberta_expirada_e_usada() {
+    let base = json!({
+        "id": "e1", "cabeca": "porta", "guarda": "segredo", "momento": "push",
+        "motivo": "falso positivo em fixture", "expira": 2000.0,
+    });
+    let aberta = linha_excecao(&excecao(base.clone()), 1000.0);
+    assert_eq!(aberta.estado, "aberta");
+    assert_eq!(aberta.tom, Tone::Warn);
+    assert_eq!(aberta.alvo, "porta/segredo @push");
+    assert_eq!(aberta.id, "e1");
+    assert_eq!(aberta.motivo, "falso positivo em fixture");
+    assert!(!aberta.prazo.is_empty());
+
+    let expirada = linha_excecao(&excecao(base.clone()), 3000.0);
+    assert_eq!(
+        (expirada.estado.as_str(), expirada.tom),
+        ("expirada", Tone::Neutral)
+    );
+
+    let mut usada = base.clone();
+    usada["usada"] = json!("a7");
+    usada["alvo"] = json!({"repo": "acme/demo"});
+    let l = linha_excecao(&excecao(usada), 1000.0);
+    assert_eq!(l.estado, "usada em a7");
+    assert_eq!(l.alvo, "porta/segredo @push {'repo': 'acme/demo'}");
+    assert_eq!(l.celulas()[4], "usada em a7");
+
+    let mut alvo_vazio = base;
+    alvo_vazio["alvo"] = json!({});
+    assert_eq!(
+        linha_excecao(&excecao(alvo_vazio.clone()), 1000.0).alvo,
+        "porta/segredo @push"
+    );
+    assert_eq!(
+        abertas(
+            &[excecao(alvo_vazio), excecao(json!({"expira": 1.0}))],
+            1000.0
+        ),
+        1
+    );
+}
+
+#[test]
+fn motivo_e_validade_seguem_o_core() {
+    assert!(erro_do_motivo("123456789").is_some());
+    assert!(erro_do_motivo("   12345678  ").is_some());
+    assert_eq!(erro_do_motivo("1234567890"), None);
+    assert_eq!(erro_do_motivo(&"x".repeat(500)), None);
+    assert!(
+        erro_do_motivo(&"x".repeat(501))
+            .unwrap()
+            .contains("10 a 500")
+    );
+
+    assert_eq!(ttl_em_horas(" 24 ", 72), Ok(24));
+    assert_eq!(ttl_em_horas("72", 72), Ok(72));
+    for ruim in ["0", "73", "-1", "+5", "1.5", "", "x"] {
+        assert!(ttl_em_horas(ruim, 72).is_err(), "{ruim}");
+    }
+    assert_eq!(
+        pares_do_alvo(" repo=acme/demo  pr=1234 "),
+        ["repo=acme/demo", "pr=1234"]
+    );
+}
+
+#[test]
+fn escolha_troca_cabeca_e_guarda() {
+    let guardas = vec![
+        guarda(
+            Cabeca::Porta,
+            "p1",
+            json!({"tipo": "exec", "momentos": ["push", "done"], "cmd": ["checks/p1.sh"]}),
+        ),
+        guarda(
+            Cabeca::Porta,
+            "p2",
+            json!({"tipo": "regra", "momentos": ["done"]}),
+        ),
+        guarda(
+            Cabeca::Limiar,
+            "l1",
+            json!({"tipo": "regra", "momentos": ["push"]}),
+        ),
+    ];
+    let mut e = Escolha::de("porta", "p1", "done").unwrap();
+    assert!(e.completa());
+    assert_eq!(Escolha::de("nada", "p1", "push"), None);
+    assert_eq!(Escolha::de("porta", "", "").unwrap(), Escolha::default());
+
+    e.trocar_guarda(&guardas[1]);
+    assert_eq!(
+        (e.guarda.as_deref(), e.momento.as_deref()),
+        (Some("p2"), Some("done"))
+    );
+    e.trocar_guarda(&guardas[0]);
+    assert_eq!(e.momento.as_deref(), Some("done"));
+    assert_eq!(momentos_da_escolha(&guardas, &e), ["push", "done"]);
+
+    e.trocar_cabeca(Cabeca::Porta);
+    assert!(e.completa());
+    e.trocar_cabeca(Cabeca::Limiar);
+    assert_eq!(
+        (e.cabeca, e.guarda.clone(), e.momento.clone()),
+        (Cabeca::Limiar, None, None)
+    );
+    assert!(momentos_da_escolha(&guardas, &e).is_empty());
+
+    let ids = |v: Vec<&Guarda>| v.into_iter().map(|g| g.id.clone()).collect::<Vec<_>>();
+    assert_eq!(
+        ids(guardas_da_escolha(&guardas, Cabeca::Porta, false)),
+        ["p1", "p2"]
+    );
+    assert_eq!(
+        ids(guardas_da_escolha(&guardas, Cabeca::Porta, true)),
+        ["p1"]
+    );
+}
+
+#[test]
+fn resultado_do_ensaio_mascara_evidencia_e_detalhe() {
+    let v = cerberus_core::modelo::Veredito(registro("t", "porta", "g", "barra"));
+    let r = resultado_do_ensaio(&v);
+    assert_eq!((r.rotulo, r.tom), ("barra", Tone::Bad));
+    assert_eq!(r.evidencia, ["src/a.rs:4: API_KEY=●●●●●●●●"]);
+    assert!(!r.detalhe.as_deref().unwrap().contains("xyz"));
+
+    let ok = resultado_do_ensaio(&cerberus_core::modelo::Veredito(dict(
+        json!({"resultado": "ok", "evidencia": [{"conferido": "nada"}], "detalhe": ""}),
+    )));
+    assert_eq!((ok.rotulo, ok.tom), ("passa", Tone::Ok));
+    assert_eq!(ok.evidencia, ["nada"]);
+    assert_eq!(ok.detalhe, None);
+    let aviso = resultado_do_ensaio(&cerberus_core::modelo::Veredito(dict(
+        json!({"resultado": "aviso"}),
+    )));
+    assert_eq!((aviso.rotulo, aviso.evidencia.len()), ("aviso", 0));
 }

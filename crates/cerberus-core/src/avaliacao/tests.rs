@@ -619,3 +619,47 @@ fn guarda_da_cli_roda_o_binario_do_check() {
     );
     assert_eq!(p.timeout.as_secs(), 30);
 }
+
+#[test]
+fn ensaiar_roda_a_guarda_sem_gravar_o_historico() {
+    let caixa = Caixa::nova();
+    exec(
+        &caixa,
+        "porta",
+        "t-a",
+        &["push"],
+        &format!("echo '{}'", ev("aviso")),
+        json!({}),
+    );
+    emitida(&caixa);
+    let gravador = Arc::new(Gravador(Mutex::new(Vec::new())));
+    let c = Cerberus::abrir(caixa.opcoes().clone());
+    let ctx: Ctx = [("texto".to_owned(), "abc".to_owned())]
+        .into_iter()
+        .collect();
+    let v = c
+        .ensaiar("porta", "t-a", "push", &ctx, Some(cfg("barra")))
+        .unwrap();
+    assert_eq!(v.resultado(), Some(Resultado::Aviso));
+    assert_eq!(v.guarda(), Some("t-a"));
+    let dir = Store::de(caixa.opcoes()).unwrap().dir().to_path_buf();
+    assert!(!dir.join("vereditos.jsonl").exists());
+
+    let c = c.com_executor(gravador.clone());
+    c.ensaiar("porta", "t-a", "push", &ctx, Some(cfg("barra")))
+        .unwrap();
+    let pedidos = gravador.0.lock().unwrap();
+    assert_eq!(pedidos[0].stdin, br#"{"texto":"abc"}"#);
+    assert_eq!(pedidos[0].timeout.as_secs(), 30);
+    drop(pedidos);
+
+    let erro = |cab: &str, id: &str, m: &str| {
+        c.ensaiar(cab, id, m, &ctx, Some(cfg("barra")))
+            .unwrap_err()
+            .to_string()
+    };
+    assert!(erro("porta", "nao-ha", "push").contains("não registrada"));
+    assert!(erro("vigilia", "so-dono", "continuo").contains("não é exec"));
+    assert!(erro("porta", "t-a", "release").contains("não roda em release"));
+    assert!(erro("porta", "t-a", "xyz").contains("momento inválido"));
+}

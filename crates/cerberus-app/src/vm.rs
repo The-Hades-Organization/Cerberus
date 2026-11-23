@@ -6,6 +6,9 @@ use hades_ui::Tone;
 use hades_ui::icons::IconName;
 use serde_json::Value;
 
+mod acoes;
+pub use acoes::*;
+
 /// Telas do trilho (`design/cerberus.html`); "Testar guarda" é o "Ensaio" do HTML (decisão 5 da F4).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Tela {
@@ -65,11 +68,6 @@ impl Tela {
     pub fn de_rotulo(rotulo: &str) -> Option<Tela> {
         Tela::TODAS.into_iter().find(|t| t.rotulo() == rotulo)
     }
-
-    /// Telas que chegam no PR seguinte: por ora, só o item do trilho e o estado vazio.
-    pub fn pendente(self) -> bool {
-        matches!(self, Tela::Excecoes | Tela::Testar | Tela::Configuracoes)
-    }
 }
 
 /// Atalho de teclado: `1` a `6` trocam de tela, na ordem do trilho.
@@ -123,7 +121,7 @@ fn nome_da_cabeca(texto: &str) -> String {
     Cabeca::parse(texto).map_or_else(|| texto.to_owned(), |c| c.nome().to_owned())
 }
 
-fn texto<'a>(r: &'a Dict, chave: &str) -> &'a str {
+pub fn texto<'a>(r: &'a Dict, chave: &str) -> &'a str {
     r.get(chave).and_then(Value::as_str).unwrap_or("")
 }
 
@@ -549,6 +547,39 @@ pub fn rodape_das_guardas(total: usize, erros: usize) -> String {
         base
     } else {
         format!("{base} · {}", plural(erros, "erro", "erros"))
+    }
+}
+
+/// Modo de um texto de configuração (aparado), ou `None` se não for um dos três.
+pub fn modo_do_texto(texto: &str) -> Option<Modo> {
+    Modo::parse(texto.trim())
+}
+
+/// Nome da cabeça dona da chave de modo, ou a própria chave.
+pub fn nome_da_chave_de_modo(chave: &str) -> String {
+    CABECAS
+        .iter()
+        .find(|c| chave_do_modo(**c) == chave)
+        .map_or_else(|| chave.to_owned(), |c| c.nome().to_owned())
+}
+
+pub fn rotulo_da_origem(origem: crate::config::Origem) -> &'static str {
+    match origem {
+        crate::config::Origem::Ambiente => Origem::Env.rotulo(),
+        crate::config::Origem::Arquivo => Origem::ConfigEnv.rotulo(),
+        crate::config::Origem::Padrao => Origem::Padrao.rotulo(),
+    }
+}
+
+pub fn configuracoes(n: usize) -> String {
+    plural(n, "configuração", "configurações")
+}
+
+/// Aviso do rodapé depois de gravar.
+pub fn gravadas(n: usize) -> String {
+    match n {
+        0 => "Nada a gravar".to_owned(),
+        _ => format!("Configurações gravadas ({n})"),
     }
 }
 

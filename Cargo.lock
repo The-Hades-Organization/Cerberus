@@ -801,6 +801,7 @@ name = "cerberus-app"
 version = "0.1.0"
 dependencies = [
  "cerberus-core",
+ "gpui-component",
  "gpui-pre",
  "gpui-pre-platform",
  "hades-core",

@@ -13,7 +13,7 @@ use crate::efeito::{efeito, geral};
 use crate::executor::{Executor, ExecutorProcesso, Lugar, rodar_guarda};
 use crate::modelo::{
     Cabeca, Ctx, Dict, EXC_LIST_MAX, Efeito, Excecao, Momento, PAGE_MAX, Resultado, TIMEOUT_MAX,
-    Tipo, js_string, now_iso, now_secs,
+    Tipo, Veredito, js_string, now_iso, now_secs,
 };
 use crate::registro::{Guarda, Registro};
 use crate::store::{NovaExcecao, Store, id_aleatorio};
@@ -393,6 +393,62 @@ impl Cerberus {
             &p.motivo,
             nova,
         )
+    }
+
+    /// Roda uma guarda exec sobre o contexto dado e devolve o veredito dela, sem gravar no histórico nem usar exceção.
+    /// É o "Testar guarda" do app; não há equivalente no TS, que só roda a guarda dentro de `evaluate`
+    /// (`src/lib/cerberus.ts:484`) pelo `runGuard` (`src/lib/cerberus.ts:344`). `cfg` ausente lê a configuração
+    /// efetiva.
+    pub fn ensaiar(
+        &self,
+        cabeca: &str,
+        guarda: &str,
+        momento: &str,
+        ctx: &Ctx,
+        cfg: Option<Cfg>,
+    ) -> Result<Veredito, Erro> {
+        if Momento::parse(momento).is_none() {
+            return Err(Erro::recusa(format!(
+                "momento inválido: {momento} ({})",
+                Momento::lista()
+            )));
+        }
+        let reg = self.registro();
+        let Some(g) = reg
+            .guardas
+            .iter()
+            .find(|g| g.cabeca.as_str() == cabeca && g.id == guarda)
+        else {
+            return Err(Erro::recusa(format!(
+                "guarda não registrada: {cabeca}/{guarda}"
+            )));
+        };
+        if g.tipo != Tipo::Exec {
+            return Err(Erro::recusa(format!(
+                "{cabeca}/{guarda} não é exec: só guarda exec roda no ensaio"
+            )));
+        }
+        if !g.momentos.iter().any(|m| m.as_str() == momento) {
+            return Err(Erro::recusa(format!(
+                "{cabeca}/{guarda} não roda em {momento}"
+            )));
+        }
+        let cfg = cfg.unwrap_or_else(|| self.config(true));
+        let timeout_s = cfg_int(&cfg, "HADES_CERBERUS_TIMEOUT_S", 1, TIMEOUT_MAX as i64)? as u64;
+        let skill = self.op.skill();
+        let lugar = Lugar {
+            skill: &skill,
+            cwd: &self.op.cwd,
+            bin_check: self.op.bin_check.as_deref(),
+        };
+        Ok(rodar_guarda(
+            self.ex.as_ref(),
+            g,
+            momento,
+            ctx,
+            &lugar,
+            timeout_s,
+        ))
     }
 
     /// `state` (`src/lib/cerberus.ts:558`): o que a página Cerberus do painel mostra. `com_env` falso lê o catálogo

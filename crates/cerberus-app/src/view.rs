@@ -1,6 +1,10 @@
-//! `CerberusView`: casca (rail, status) e as telas Vereditos, Guardas e Modos.
+//! `CerberusView`: casca (rail, status) e as telas Vereditos, Guardas e Modos; as de ação ficam nos submódulos.
+
+mod config;
+mod excecoes;
 
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
@@ -16,6 +20,7 @@ use hades_ui::icons::IconName;
 use hades_ui::tokens::space;
 use hades_ui::{Tone, palette};
 
+use crate::config::{ConfigLocal, FonteDeConfig};
 use crate::service::{self, Dados};
 use crate::vm::{self, CABECAS, COLUNAS_GUARDAS, COLUNAS_VEREDITOS, Filtro, Tarefa, Tela};
 
@@ -35,10 +40,19 @@ pub struct CerberusView {
     tique: u32,
     t_dados: Tarefa,
     recolhida: bool,
+    fonte: Arc<dyn FonteDeConfig>,
+    cfg: Option<config::CfgEstado>,
+    cfg_lida: Option<config::LeituraCfg>,
+    cfg_salvo: bool,
+    t_cfg: Tarefa,
+    t_salvar: Tarefa,
+    form: excecoes::FormExcecao,
+    ensaio: excecoes::Ensaio,
 }
 
 impl CerberusView {
     pub fn new(env: Env, cwd: PathBuf, foco: FocusHandle, cx: &mut Context<Self>) -> Self {
+        let fonte: Arc<dyn FonteDeConfig> = Arc::new(ConfigLocal::new(&env, &cwd));
         let mut view = Self {
             env,
             cwd,
@@ -51,6 +65,14 @@ impl CerberusView {
             tique: 0,
             t_dados: Tarefa::default(),
             recolhida: false,
+            fonte,
+            cfg: None,
+            cfg_lida: None,
+            cfg_salvo: false,
+            t_cfg: Tarefa::default(),
+            t_salvar: Tarefa::default(),
+            form: excecoes::FormExcecao::default(),
+            ensaio: excecoes::Ensaio::default(),
         };
         view.recarregar(cx);
         view
@@ -112,6 +134,9 @@ impl CerberusView {
 
     fn mudar_tela(&mut self, tela: Tela, cx: &mut Context<Self>) {
         self.tela = tela;
+        if tela == Tela::Configuracoes && self.cfg.is_none() {
+            self.carregar_config(cx);
+        }
         self.recarregar(cx);
     }
 
@@ -251,7 +276,7 @@ impl CerberusView {
         })
     }
 
-    fn inspector(&self, visiveis: &[usize]) -> gpui::AnyElement {
+    fn inspector(&self, visiveis: &[usize], cx: &mut Context<Self>) -> gpui::AnyElement {
         let hist = self.historico();
         let Some(p) = vm::posicao_da_selecao(hist, visiveis, self.selecionado.as_deref()) else {
             return EmptyState::new("Nenhum veredito selecionado")
@@ -259,7 +284,10 @@ impl CerberusView {
                 .fill()
                 .into_any_element();
         };
-        let i = vm::inspecao(&hist[visiveis[p]]);
+        let reg = &hist[visiveis[p]];
+        let [cab, guarda, momento] =
+            ["cabeca", "guarda", "momento"].map(|k| vm::texto(reg, k).to_owned());
+        let i = vm::inspecao(reg);
         let mut meta = MetaList::new().label_width(104.0);
         for (rotulo, valor) in i.meta {
             meta = meta.row(rotulo, valor);
@@ -286,7 +314,9 @@ impl CerberusView {
             .action(
                 Button::new("criar-excecao", "Criar exceção")
                     .icon(IconName::ShieldOff)
-                    .disabled("chega com a tela Exceções"),
+                    .on_click(cx.listener(move |v, _, _, cx| {
+                        v.criar_excecao_de(&cab, &guarda, &momento, cx)
+                    })),
             )
             .into_any_element()
     }
@@ -329,7 +359,7 @@ impl CerberusView {
                     .flex_none()
                     .w(px(LARGURA_INSPECTOR))
                     .overflow_y_scroll()
-                    .child(self.inspector(&visiveis)),
+                    .child(self.inspector(&visiveis, cx)),
             );
         pagina
             .child(self.kpis(d))
@@ -438,17 +468,15 @@ impl CerberusView {
         }
         pagina.child(linha)
     }
-
-    fn tela_pendente(&self) -> Page {
-        let t = self.tela;
-        Page::new("pagina-pendente")
-            .header(PageHeader::new(t.rotulo()))
-            .child(EmptyState::new("Chega no próximo PR").fill())
-    }
 }
 
 impl Render for CerberusView {
-    fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        match self.tela {
+            Tela::Configuracoes => self.garantir_config(window, cx),
+            Tela::Excecoes | Tela::Testar => self.garantir_acoes(window, cx),
+            _ => {}
+        }
         let p = palette(cx);
         let (esquerda, direita) = self.rodape();
         let rail = self.rail(cx);
@@ -456,9 +484,9 @@ impl Render for CerberusView {
             Tela::Vereditos => self.tela_vereditos(cx).into_any_element(),
             Tela::Guardas => self.tela_guardas(cx).into_any_element(),
             Tela::Modos => self.tela_modos(cx).into_any_element(),
-            Tela::Excecoes | Tela::Testar | Tela::Configuracoes => {
-                self.tela_pendente().into_any_element()
-            }
+            Tela::Configuracoes => self.tela_config(cx).into_any_element(),
+            Tela::Excecoes => self.tela_excecoes(cx).into_any_element(),
+            Tela::Testar => self.tela_testar(cx).into_any_element(),
         };
         div()
             .id("cerberus")

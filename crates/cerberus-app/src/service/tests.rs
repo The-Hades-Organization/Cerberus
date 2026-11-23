@@ -88,3 +88,47 @@ fn modo_invalido_vira_recusa_sem_derrubar_o_resto() {
     assert!(d.guardas.is_empty());
     assert!(d.modos.is_err());
 }
+
+fn nova(motivo: &str) -> NovaExcecao {
+    NovaExcecao {
+        cabeca: "porta".into(),
+        guarda: "x".into(),
+        momento: "push".into(),
+        motivo: motivo.into(),
+        alvo: vec!["repo=acme/demo".into()],
+        ttl_h: 2,
+    }
+}
+
+#[test]
+fn abre_excecao_com_origem_do_app_e_recusa_motivo_curto() {
+    let dir = tempfile::tempdir().unwrap();
+    let raiz = fs::canonicalize(dir.path()).unwrap();
+    escreve(
+        &raiz,
+        "skill/loop/cerberus/porta/x.json",
+        r#"{"titulo": "X", "origem": "teste", "momentos": ["push"], "tipo": "regra"}"#,
+    );
+    let env = Env::empty().with("HADES_CERBERUS_VIGILIA", "off");
+    let [op_a, op_b, op_c] = [(); 3].map(|_| caixa(&raiz, env.clone()));
+    let tsv = fs::read_to_string(raiz.join("skill/kit/config.tsv")).unwrap();
+    escreve(
+        &raiz,
+        "skill/kit/config.tsv",
+        &format!("{tsv}HADES_CERBERUS_EXC_TTL_H\t24\n"),
+    );
+    escreve(&raiz, "d/config.env", "HADES_CERBERUS_EXC_TTL_H=48\n");
+
+    assert!(abrir_excecao(op_a, nova("curto")).is_err());
+
+    let e = abrir_excecao(op_b, nova("falso positivo na fixture")).unwrap();
+    assert_eq!(e.texto("origem"), Some("app"));
+    assert_eq!(e.texto("guarda"), Some("x"));
+    assert_eq!(e.campos().unwrap()["alvo"]["repo"], "acme/demo");
+
+    let d = carregar(op_c).unwrap();
+    let lista = d.excecoes.unwrap();
+    assert_eq!(lista.len(), 1);
+    assert_eq!(lista[0].id(), e.id());
+    assert_eq!(d.ttl_h, Ok(48));
+}
