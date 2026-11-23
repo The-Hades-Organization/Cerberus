@@ -293,7 +293,7 @@ pub fn js_norm(value: Value) -> Value {
 }
 
 /// `String(x)` do JS para o que vem de um registro: ausente é `"undefined"`.
-pub(crate) fn js_string(value: Option<&Value>) -> String {
+pub fn js_string(value: Option<&Value>) -> String {
     match value {
         None => "undefined".to_owned(),
         Some(Value::Null) => "null".to_owned(),

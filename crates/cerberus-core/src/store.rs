@@ -78,7 +78,7 @@ impl Store {
     }
 
     /// `locked` (`src/lib/cerberus.ts:379`).
-    fn travado<T>(&self, f: impl FnOnce() -> T) -> io::Result<T> {
+    pub(crate) fn travado<T>(&self, f: impl FnOnce() -> T) -> io::Result<T> {
         with_flock(&self.dir.join(".lock"), f)
     }
 
@@ -202,7 +202,7 @@ impl Store {
 }
 
 /// `randomBytes(6).toString("hex")`.
-fn id_aleatorio() -> io::Result<String> {
+pub(crate) fn id_aleatorio() -> io::Result<String> {
     let mut bytes = [0u8; 6];
     fs::File::open("/dev/urandom")?.read_exact(&mut bytes)?;
     Ok(bytes.iter().map(|b| format!("{b:02x}")).collect())

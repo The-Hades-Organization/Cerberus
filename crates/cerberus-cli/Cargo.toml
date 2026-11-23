@@ -11,7 +11,12 @@ path = "src/main.rs"
 
 [dependencies]
 cerberus-core = { path = "../cerberus-core" }
-clap.workspace = true
+hades-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
 
 [lints]
 workspace = true

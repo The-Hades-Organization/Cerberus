@@ -4,12 +4,17 @@
 //! evidência, exceção do dono e histórico fora do repositório. Os arquivos de estado (`vereditos.jsonl`,
 //! `excecoes.json`) saem byte a byte iguais aos do TS.
 
+pub mod avaliacao;
 pub mod config;
 pub mod ctx;
 pub mod efeito;
+pub mod executor;
 pub mod modelo;
 pub mod registro;
 pub mod store;
+
+pub use avaliacao::{Avaliacao, Cerberus, Entrada, PedidoExcecao, PedidoRegistro};
+pub use executor::{Executor, ExecutorProcesso, Pedido, Saida};
 
 #[cfg(test)]
 mod testes;
