@@ -464,6 +464,33 @@ pub fn fnmatch_case(text: &str, pattern: &str) -> bool {
     casa(&pecas(pattern), &texto)
 }
 
+/// `evaluate` (`src/commands/cerberus-check.ts:12`): o despacho de `cerberus check <alvo> [arg]` para a Porta, o
+/// Limiar e a Vigília (auditoria e coerência). `None` é alvo sem guarda portada; quem chama responde o uso.
+pub fn despachar(args: &[String], ce: &CheckEnv) -> Option<CheckVerdict> {
+    let alvo = args.first().map(String::as_str).unwrap_or("");
+    let arg = args.get(1).map(String::as_str);
+    let extra = args.len() > 2;
+    let mut partes = alvo.split('/');
+    let cab = partes.next().unwrap_or("");
+    let id = partes.next();
+    match cab {
+        "porta" => id
+            .filter(|i| !i.is_empty())
+            .and_then(crate::porta::guarda)
+            .map(|g| g(ce)),
+        "limiar" if !(id.is_some_and(|i| !i.is_empty()) || extra) => {
+            crate::limiar::rodar(arg.unwrap_or(""), ce)
+        }
+        "vigilia" if id == Some("auditoria") && args.len() == 2 => {
+            crate::vigilia::rodar_vigilia(&crate::vigilia::AUDITORIA, &args[1], ce)
+        }
+        "vigilia" if id == Some("coerencia") && args.len() == 2 => {
+            crate::vigilia::rodar_vigilia(&crate::vigilia::COERENCIA, &args[1], ce)
+        }
+        _ => None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -540,5 +567,79 @@ mod tests {
         assert_eq!(ce.momento, "push");
         assert!(parse_ctx(Some("[1]")).is_empty());
         assert!(parse_ctx(Some("{x")).is_empty());
+    }
+}
+
+#[cfg(test)]
+mod despacho_tests {
+    use super::*;
+
+    fn args(a: &[&str]) -> Vec<String> {
+        a.iter().map(|x| (*x).to_owned()).collect()
+    }
+
+    #[test]
+    fn porta_vai_para_a_guarda_dela() {
+        let ce = CheckEnv::default();
+        let g = crate::porta::guarda("tunel-acesso").unwrap();
+        let v = despachar(&args(&["porta/tunel-acesso"]), &ce);
+        assert_eq!(v, Some(g(&ce)));
+        assert_eq!(v.unwrap().resultado, Resultado::Barra);
+        assert_eq!(despachar(&args(&["porta/fantasma"]), &ce), None);
+        assert_eq!(despachar(&args(&["porta/"]), &ce), None);
+        assert_eq!(despachar(&args(&["porta"]), &ce), None);
+    }
+
+    #[test]
+    fn limiar_vai_para_o_rodar_dele() {
+        let ce = CheckEnv::default();
+        for g in ["commit-fixado", "executavel", "invariante", "x"] {
+            assert_eq!(
+                despachar(&args(&["limiar", g]), &ce),
+                crate::limiar::rodar(g, &ce),
+                "{g}"
+            );
+        }
+        assert!(despachar(&args(&["limiar", "commit-fixado"]), &ce).is_some());
+        assert_eq!(
+            despachar(&args(&["limiar"]), &ce),
+            crate::limiar::rodar("", &ce)
+        );
+        assert_eq!(despachar(&args(&["limiar/x", "commit-fixado"]), &ce), None);
+        assert_eq!(
+            despachar(&args(&["limiar", "commit-fixado", "y"]), &ce),
+            None
+        );
+    }
+
+    #[test]
+    fn vigilia_vai_para_auditoria_e_coerencia() {
+        let dir = tempfile::tempdir().unwrap();
+        let ce = CheckEnv {
+            dir: dir.path().to_path_buf(),
+            ..CheckEnv::default()
+        };
+        assert_eq!(
+            despachar(&args(&["vigilia/auditoria", "escopo"]), &ce),
+            crate::vigilia::rodar_vigilia(&crate::vigilia::AUDITORIA, "escopo", &ce)
+        );
+        assert_eq!(
+            despachar(&args(&["vigilia/coerencia", "registro"]), &ce),
+            crate::vigilia::rodar_vigilia(&crate::vigilia::COERENCIA, "registro", &ce)
+        );
+        assert!(despachar(&args(&["vigilia/coerencia", "registro"]), &ce).is_some());
+        assert_eq!(despachar(&args(&["vigilia/auditoria"]), &ce), None);
+        assert_eq!(
+            despachar(&args(&["vigilia/coerencia", "registro", "x"]), &ce),
+            None
+        );
+        assert_eq!(despachar(&args(&["vigilia/outra", "registro"]), &ce), None);
+    }
+
+    #[test]
+    fn alvo_sem_cabeca_portada_nao_tem_veredito() {
+        let ce = CheckEnv::default();
+        assert_eq!(despachar(&[], &ce), None);
+        assert_eq!(despachar(&args(&["ensaio", "x"]), &ce), None);
     }
 }

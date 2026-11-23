@@ -19,7 +19,7 @@ pub mod store;
 pub mod vigilia;
 
 pub use avaliacao::{Avaliacao, Cerberus, Entrada, PedidoExcecao, PedidoRegistro};
-pub use executor::{Executor, ExecutorProcesso, Pedido, Saida};
+pub use executor::{Executor, ExecutorEmProcesso, ExecutorProcesso, Pedido, Saida};
 
 #[cfg(test)]
 mod testes;

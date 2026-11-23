@@ -798,7 +798,7 @@ dependencies = [
 
 [[package]]
 name = "cerberus-app"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cerberus-core",
  "gpui-component",
@@ -812,7 +812,7 @@ dependencies = [
 
 [[package]]
 name = "cerberus-cli"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "cerberus-core",
  "hades-core",
@@ -823,7 +823,7 @@ dependencies = [
 
 [[package]]
 name = "cerberus-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "fancy-regex",
  "hades-core",

@@ -1,6 +1,7 @@
 //! Execução das guardas `exec` (`src/lib/cerberus.ts:316-376`): o subprocesso atrás de uma trait, para o app e os
 //! testes trocarem o executor, e a leitura do veredito que a guarda imprime.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
@@ -8,10 +9,11 @@ use std::time::Duration;
 
 use hades_core::config::split_lines;
 use hades_core::fsx::realpath_missing_ok;
-use hades_core::jsonfmt::stringify;
+use hades_core::jsonfmt::{py_dumps, stringify};
 use hades_core::proc::{RunOptions, run, which};
 use serde_json::{Map, Value};
 
+use crate::check::{CheckEnv, despachar};
 use crate::ctx::{erro_do_veredito, recusado};
 use crate::modelo::{Ctx, OUT_BUFFER, OUT_MAX, Veredito, js_norm, js_trim};
 use crate::registro::{CLI_CMD, Guarda, pasta};
@@ -104,6 +106,73 @@ impl Executor for ExecutorProcesso {
         Saida::Terminou {
             status: r.status,
             stdout: r.stdout,
+        }
+    }
+}
+
+/// O executor que roda as guardas portadas no próprio processo: `["hades", "cerberus-check", <alvo>…]` e
+/// `["cerberus", "check", <alvo>…]` (o `argv[0]` pelo nome do arquivo, para valer também o `bin_check`) vão para
+/// [`crate::check::despachar`] com o [`CheckEnv`](crate::check::CheckEnv) montado do ambiente do processo mais
+/// [`Pedido::env`] e de [`Pedido::cwd`], como o filho montaria. A saída imita a do subcomando `cerberus check`
+/// (`src/commands/cerberus-check.ts:32`): o veredito numa linha JSON e status 0, ou status 2 sem saída quando o alvo
+/// não tem guarda. Qualquer outro `argv` vai para o executor de fora (por padrão, [`ExecutorProcesso`]).
+///
+/// Diferença do subprocesso: caminho relativo resolvido pela Vigília parte da pasta deste processo, não de
+/// [`Pedido::cwd`]; as guardas recebem caminhos absolutos do núcleo.
+pub struct ExecutorEmProcesso {
+    fora: Box<dyn Executor>,
+}
+
+impl Default for ExecutorEmProcesso {
+    fn default() -> Self {
+        Self::novo()
+    }
+}
+
+impl ExecutorEmProcesso {
+    /// Com [`ExecutorProcesso`] para o que não é guarda portada.
+    pub fn novo() -> Self {
+        Self::com_fora(Box::new(ExecutorProcesso))
+    }
+
+    /// Com o executor dado para o que não é guarda portada.
+    pub fn com_fora(fora: Box<dyn Executor>) -> Self {
+        Self { fora }
+    }
+
+    /// Os argumentos de `check` quando o `argv` é uma guarda portada.
+    fn alvo(argv: &[String]) -> Option<&[String]> {
+        let nome = Path::new(argv.first()?).file_name()?.to_str()?;
+        let sub = argv.get(1)?.as_str();
+        match (nome, sub) {
+            (CLI_CMD, "cerberus-check") | ("cerberus", "check") => Some(&argv[2..]),
+            _ => None,
+        }
+    }
+}
+
+impl Executor for ExecutorEmProcesso {
+    fn executar(&self, pedido: &Pedido) -> Saida {
+        let Some(args) = Self::alvo(&pedido.argv) else {
+            return self.fora.executar(pedido);
+        };
+        match fs::metadata(&pedido.cwd) {
+            Err(_) => return Saida::NaoExecutou(ENOENT.to_owned()),
+            Ok(m) if !m.is_dir() => return Saida::NaoExecutou(ENOTDIR.to_owned()),
+            Ok(_) => {}
+        }
+        let mut env: BTreeMap<String, String> = std::env::vars().collect();
+        env.extend(pedido.env.iter().cloned());
+        let ce = CheckEnv::do_ambiente(env, &pedido.cwd);
+        match despachar(args, &ce) {
+            Some(v) => Saida::Terminou {
+                status: 0,
+                stdout: format!("{}\n", py_dumps(&v.to_json(), None)),
+            },
+            None => Saida::Terminou {
+                status: 2,
+                stdout: String::new(),
+            },
         }
     }
 }
@@ -281,5 +350,118 @@ mod tests {
             Some(ENOENT)
         );
         assert_eq!(erro_de_spawn("/bin/sh", cwd), None);
+    }
+
+    struct Fora(std::sync::Mutex<Vec<Pedido>>);
+
+    impl Executor for Fora {
+        fn executar(&self, pedido: &Pedido) -> Saida {
+            self.0.lock().unwrap().push(pedido.clone());
+            Saida::Tempo
+        }
+    }
+
+    fn pedido(argv: &[&str], cwd: &Path) -> Pedido {
+        Pedido {
+            argv: argv.iter().map(|a| (*a).to_owned()).collect(),
+            cwd: cwd.to_path_buf(),
+            env: vec![("CERBERUS_MOMENTO".into(), "push".into())],
+            stdin: Vec::new(),
+            timeout: Duration::from_secs(5),
+        }
+    }
+
+    #[test]
+    fn em_processo_reconhece_as_guardas_portadas() {
+        let dir = tempfile::tempdir().unwrap();
+        let fora = std::sync::Arc::new(Fora(std::sync::Mutex::new(Vec::new())));
+        struct Ponte(std::sync::Arc<Fora>);
+        impl Executor for Ponte {
+            fn executar(&self, p: &Pedido) -> Saida {
+                self.0.executar(p)
+            }
+        }
+        let ex = ExecutorEmProcesso::com_fora(Box::new(Ponte(fora.clone())));
+        let esperado = {
+            let p = pedido(&[], dir.path());
+            let ce = CheckEnv::do_ambiente(
+                std::env::vars().chain(p.env.iter().cloned()).collect(),
+                dir.path(),
+            );
+            py_dumps(
+                &despachar(&["porta/tunel-acesso".to_owned()], &ce)
+                    .unwrap()
+                    .to_json(),
+                None,
+            )
+        };
+        for argv in [
+            &["hades", "cerberus-check", "porta/tunel-acesso"][..],
+            &["cerberus", "check", "porta/tunel-acesso"][..],
+            &["/opt/bin/cerberus", "check", "porta/tunel-acesso"][..],
+        ] {
+            let Saida::Terminou { status, stdout } = ex.executar(&pedido(argv, dir.path())) else {
+                panic!("{argv:?}")
+            };
+            assert_eq!(status, 0, "{argv:?}");
+            assert_eq!(stdout, format!("{esperado}\n"), "{argv:?}");
+        }
+        assert_eq!(
+            ex.executar(&pedido(
+                &["hades", "cerberus-check", "porta/fantasma"],
+                dir.path()
+            )),
+            Saida::Terminou {
+                status: 2,
+                stdout: String::new()
+            }
+        );
+        assert_eq!(
+            ex.executar(&pedido(
+                &["hades", "cerberus-check", "porta/tunel-acesso"],
+                &dir.path().join("x")
+            )),
+            Saida::NaoExecutou(ENOENT.to_owned())
+        );
+        assert!(fora.0.lock().unwrap().is_empty());
+        for argv in [
+            &["hades", "lock", "status"][..],
+            &["cerberus", "estado"][..],
+            &["checks/x.sh"][..],
+            &[][..],
+        ] {
+            assert_eq!(
+                ex.executar(&pedido(argv, dir.path())),
+                Saida::Tempo,
+                "{argv:?}"
+            );
+        }
+        assert_eq!(fora.0.lock().unwrap().len(), 4);
+    }
+
+    #[test]
+    fn em_processo_soma_o_env_do_pedido_ao_do_processo() {
+        let dir = tempfile::tempdir().unwrap();
+        let ex = ExecutorEmProcesso::novo();
+        let mut p = pedido(
+            &["hades", "cerberus-check", "vigilia/coerencia", "registro"],
+            dir.path(),
+        );
+        p.env.push((
+            "CERBERUS_DIR".into(),
+            dir.path().to_string_lossy().into_owned(),
+        ));
+        let ce = CheckEnv::do_ambiente(
+            std::env::vars().chain(p.env.iter().cloned()).collect(),
+            dir.path(),
+        );
+        let v = despachar(&["vigilia/coerencia".into(), "registro".into()], &ce).unwrap();
+        assert_eq!(
+            ex.executar(&p),
+            Saida::Terminou {
+                status: 0,
+                stdout: format!("{}\n", py_dumps(&v.to_json(), None))
+            }
+        );
     }
 }
