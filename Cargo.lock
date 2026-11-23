@@ -846,6 +846,13 @@ dependencies = [
 [[package]]
 name = "cerberus-core"
 version = "0.1.0"
+dependencies = [
+ "hades-core",
+ "indexmap",
+ "serde",
+ "serde_json",
+ "tempfile",
+]
 
 [[package]]
 name = "cfg-if"
@@ -2730,6 +2737,17 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tracing",
+]
+
+[[package]]
+name = "hades-core"
+version = "0.2.3"
+source = "git+https://github.com/The-Hades-Organization/Hades-Core?tag=v0.2.3#f6f6e9e91ab2334cf99450548c499442cd4ad433"
+dependencies = [
+ "regex",
+ "rustix",
+ "serde_json",
+ "sha2 0.10.9",
 ]
 
 [[package]]

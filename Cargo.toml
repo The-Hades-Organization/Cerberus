@@ -9,6 +9,11 @@ license = "MIT"
 repository = "https://github.com/The-Hades-Organization/Cerberus"
 
 [workspace.dependencies]
+hades-core = { git = "https://github.com/The-Hades-Organization/Hades-Core", tag = "v0.2.3" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+indexmap = { version = "2", features = ["serde"] }
+tempfile = "3"
 clap = { version = "4", features = ["derive"] }
 gpui = { package = "gpui-pre", version = "=0.3.11" }
 gpui_platform = { package = "gpui-pre-platform", version = "=0.3.11", default-features = false, features = ["wayland", "x11"] }
