@@ -1,6 +1,7 @@
 //! `CerberusView`: casca (rail, status) e as telas Vereditos, Guardas e Modos; as de ação ficam nos submódulos.
 
 mod config;
+pub mod embed;
 mod excecoes;
 mod tabela;
 
@@ -52,6 +53,7 @@ pub struct CerberusView {
     t_salvar: Tarefa,
     form: excecoes::FormExcecao,
     ensaio: excecoes::Ensaio,
+    integrado: bool,
 }
 
 impl CerberusView {
@@ -77,6 +79,7 @@ impl CerberusView {
             t_salvar: Tarefa::default(),
             form: excecoes::FormExcecao::default(),
             ensaio: excecoes::Ensaio::default(),
+            integrado: false,
         };
         view.recarregar(cx);
         view
@@ -505,24 +508,36 @@ impl CerberusView {
     }
 }
 
-impl Render for CerberusView {
-    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        match self.tela {
+impl CerberusView {
+    /// Miolo da tela `tela`, sem trilho nem barra de status.
+    fn corpo(
+        &mut self,
+        tela: Tela,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> gpui::AnyElement {
+        match tela {
             Tela::Configuracoes => self.garantir_config(window, cx),
             Tela::Excecoes | Tela::Testar => self.garantir_acoes(window, cx),
             _ => {}
         }
-        let p = palette(cx);
-        let (esquerda, direita) = self.rodape();
-        let rail = self.rail(cx);
-        let corpo = match self.tela {
+        match tela {
             Tela::Vereditos => self.tela_vereditos(cx).into_any_element(),
             Tela::Guardas => self.tela_guardas(cx).into_any_element(),
             Tela::Modos => self.tela_modos(cx).into_any_element(),
             Tela::Configuracoes => self.tela_config(cx).into_any_element(),
             Tela::Excecoes => self.tela_excecoes(cx).into_any_element(),
             Tela::Testar => self.tela_testar(cx).into_any_element(),
-        };
+        }
+    }
+}
+
+impl Render for CerberusView {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let p = palette(cx);
+        let (esquerda, direita) = self.rodape();
+        let rail = self.rail(cx);
+        let corpo = self.corpo(self.tela, window, cx);
         div()
             .id("cerberus")
             .track_focus(&self.foco)

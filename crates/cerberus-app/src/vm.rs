@@ -30,7 +30,7 @@ impl Tela {
         Tela::Configuracoes,
     ];
 
-    pub fn rotulo(self) -> &'static str {
+    pub const fn rotulo(self) -> &'static str {
         match self {
             Tela::Vereditos => "Vereditos",
             Tela::Guardas => "Guardas",
@@ -41,7 +41,7 @@ impl Tela {
         }
     }
 
-    pub fn icone(self) -> IconName {
+    pub const fn icone(self) -> IconName {
         match self {
             Tela::Vereditos => IconName::Scale,
             Tela::Guardas => IconName::Guarda,
@@ -52,7 +52,19 @@ impl Tela {
         }
     }
 
-    /// Nome de tela aceito em `--tela`.
+    /// Nome de tela aceito em `--tela`; também o id estável da tela no painel.
+    pub const fn id(self) -> &'static str {
+        match self {
+            Tela::Vereditos => "vereditos",
+            Tela::Guardas => "guardas",
+            Tela::Modos => "modos",
+            Tela::Excecoes => "excecoes",
+            Tela::Testar => "testar",
+            Tela::Configuracoes => "configuracoes",
+        }
+    }
+
+    /// Tela de um nome aceito em `--tela`.
     pub fn de_nome(nome: &str) -> Option<Tela> {
         match nome {
             "vereditos" => Some(Tela::Vereditos),

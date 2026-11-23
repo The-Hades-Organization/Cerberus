@@ -202,7 +202,7 @@ impl CerberusView {
         (motivo, vm::ttl_em_horas(&valor(&self.form.ttl, cx), max))
     }
 
-    fn abrir_excecao(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn abrir_excecao(&mut self, cx: &mut Context<Self>) {
         self.form.tentou = true;
         self.form.recusa = None;
         let (erro_motivo, ttl) = self.erros_do_form(cx);
@@ -334,7 +334,7 @@ impl CerberusView {
         )
     }
 
-    fn rodar_ensaio(&mut self, cx: &mut Context<Self>) {
+    pub(super) fn rodar_ensaio(&mut self, cx: &mut Context<Self>) {
         let e = &self.ensaio.escolha;
         let (Some(guarda), Some(momento)) = (e.guarda.clone(), e.momento.clone()) else {
             return;

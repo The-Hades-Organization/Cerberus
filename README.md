@@ -12,7 +12,8 @@ Cerberus: ferramenta do Hades, reescrita em Rust.
 
 - **CLI:** o binário `cerberus` cobre os comandos do Cerberus do Hades. A paridade com a versão em TypeScript roda no
   CI e trava o merge quando diverge: CLI 78 casos, Porta 66, Limiar 106, Ensaio 3 e Vigília 105.
-- **App:** o `cerberus-app` tem as 6 telas (Vereditos, Guardas, Modos, Exceções, Testar guarda e Configurações).
+- **App:** o `cerberus-app` tem as 6 telas (Vereditos, Guardas, Modos, Exceções, Testar guarda e Configurações) e
+  entra no painel do Hades pelo contrato `FerramentaEmbutida` do Hades-UI v0.3.0.
 - **Ligar no Hades:** com `HADES_CERBERUS_IMPL=rust` (Configurações, grupo Cerberus), o `hades cerberus …` passa a chamar
   o binário `cerberus` do `HADES_CERBERUS_BIN` ou do PATH. O padrão `ts` segue usando a versão em TypeScript.
 
