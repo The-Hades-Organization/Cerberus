@@ -56,7 +56,7 @@ pub struct CerberusView {
 
 impl CerberusView {
     pub fn new(env: Env, cwd: PathBuf, foco: FocusHandle, cx: &mut Context<Self>) -> Self {
-        let fonte: Arc<dyn FonteDeConfig> = Arc::new(ConfigLocal::new(&env, &cwd));
+        let fonte: Arc<dyn FonteDeConfig> = Arc::new(ConfigLocal::new(&env));
         let mut view = Self {
             env,
             cwd,

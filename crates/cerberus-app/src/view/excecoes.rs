@@ -315,7 +315,7 @@ impl CerberusView {
                 }
                 Card::new()
                     .title("Exceções")
-                    .meta(format!("{} abertas", vm::abertas(excs, d.agora_s)))
+                    .meta(vm::contador_abertas(vm::abertas(excs, d.agora_s)))
                     .child(tabela)
                     .into_any_element()
             }

@@ -1,8 +1,7 @@
 //! View-model das telas de ação: Exceções e Testar guarda.
 
 use cerberus_core::modelo::{
-    Cabeca, EXC_VALIDITY_MIN_CHARS, Excecao, Resultado, TEXT_MAX, Tipo, Veredito, now_iso, py_repr,
-    tamanho,
+    Cabeca, EXC_VALIDITY_MIN_CHARS, Excecao, Resultado, TEXT_MAX, Tipo, Veredito, now_iso, tamanho,
 };
 use cerberus_core::registro::Guarda;
 use hades_ui::Tone;
@@ -10,7 +9,7 @@ use serde_json::Value;
 
 use super::{data_hora, mascarar};
 
-pub const COLUNAS_EXCECOES: [&str; 5] = ["Id", "Alvo", "Prazo", "Motivo", "Estado"];
+pub const COLUNAS_EXCECOES: [&str; 6] = ["Id", "Alvo", "Prazo", "Motivo", "Por", "Estado"];
 
 /// Uma exceção como a lista mostra.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -19,17 +18,19 @@ pub struct LinhaExcecao {
     pub alvo: String,
     pub prazo: String,
     pub motivo: String,
+    pub por: String,
     pub estado: String,
     pub tom: Tone,
 }
 
 impl LinhaExcecao {
-    pub fn celulas(&self) -> [String; 5] {
+    pub fn celulas(&self) -> [String; 6] {
         [
             self.id.clone(),
             self.alvo.clone(),
             self.prazo.clone(),
             self.motivo.clone(),
+            self.por.clone(),
             self.estado.clone(),
         ]
     }
@@ -55,7 +56,7 @@ fn texto_de(v: Option<&Value>) -> String {
 }
 
 /// `excecao listar` do CLI (`crates/cerberus-cli/src/main.rs:374`): usada → "usada em <avaliação>", prazo vencido →
-/// "expirada", senão "aberta"; o alvo sai como o Python o imprime, só quando não é vazio.
+/// "expirada", senão "aberta". O alvo sai como `chave=valor`, separados por espaço, só quando não é vazio.
 pub fn linha_excecao(e: &Excecao, agora_s: f64) -> LinhaExcecao {
     let v = e.valor();
     let expira = v.get("expira").and_then(Value::as_f64).unwrap_or(0.0);
@@ -70,7 +71,13 @@ pub fn linha_excecao(e: &Excecao, agora_s: f64) -> LinhaExcecao {
         ("aberta".to_owned(), Tone::Warn)
     };
     let alvo = match v.get("alvo") {
-        Some(al) if al.as_object().is_some_and(|o| !o.is_empty()) => format!(" {}", py_repr(al)),
+        Some(Value::Object(o)) if !o.is_empty() => {
+            let pares: Vec<String> = o
+                .iter()
+                .map(|(k, v)| format!("{k}={}", texto_de(Some(v))))
+                .collect();
+            format!(" {}", pares.join(" "))
+        }
         _ => String::new(),
     };
     LinhaExcecao {
@@ -83,8 +90,18 @@ pub fn linha_excecao(e: &Excecao, agora_s: f64) -> LinhaExcecao {
         ),
         prazo: data_hora(&now_iso(expira)),
         motivo: texto_de(v.get("motivo")),
+        por: texto_de(v.get("por")),
         estado,
         tom,
+    }
+}
+
+/// O contador do cartão: "1 aberta", "2 abertas", "0 abertas".
+pub fn contador_abertas(n: usize) -> String {
+    if n == 1 {
+        "1 aberta".to_owned()
+    } else {
+        format!("{n} abertas")
     }
 }
 

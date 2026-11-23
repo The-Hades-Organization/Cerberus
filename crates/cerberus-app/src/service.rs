@@ -8,9 +8,9 @@ use cerberus_core::registro::Guarda;
 use cerberus_core::{Cerberus, Opcoes, PedidoExcecao};
 use hades_core::Env;
 use hades_core::config::{self, ConfigStore};
-use hades_core::fsx::read_text;
-use hades_core::paths::{hades_home, skill_root};
+use hades_core::paths::skill_root;
 
+use crate::config::pasta_da_instalacao;
 use crate::vm::{CABECAS, CartaoModo, chave_do_modo, origem};
 
 /// Tudo o que as telas leem, numa ida ao disco.
@@ -27,13 +27,6 @@ pub struct Dados {
     pub ttl_h: Result<i64, String>,
     /// Pasta do histórico (`vereditos.jsonl`), para o rodapé.
     pub pasta: Option<PathBuf>,
-}
-
-/// `$D` da instalação: primeira linha de `~/.hades/instance`, como o `config` do core lê.
-fn pasta_da_instalacao(env: &Env) -> Option<PathBuf> {
-    let texto = read_text(&hades_home(env).join("instance"))?;
-    let primeira = texto.lines().next()?.trim();
-    (!primeira.is_empty()).then(|| PathBuf::from(primeira))
 }
 
 fn cartoes_de_modo(cerberus: &Cerberus, env: &Env) -> Result<Vec<CartaoModo>, String> {

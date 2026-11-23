@@ -258,10 +258,17 @@ fn excecao(v: Value) -> cerberus_core::modelo::Excecao {
 }
 
 #[test]
+fn contador_de_abertas_no_singular_e_no_plural() {
+    assert_eq!(contador_abertas(0), "0 abertas");
+    assert_eq!(contador_abertas(1), "1 aberta");
+    assert_eq!(contador_abertas(2), "2 abertas");
+}
+
+#[test]
 fn linha_de_excecao_aberta_expirada_e_usada() {
     let base = json!({
         "id": "e1", "cabeca": "porta", "guarda": "segredo", "momento": "push",
-        "motivo": "falso positivo em fixture", "expira": 2000.0,
+        "motivo": "falso positivo em fixture", "expira": 2000.0, "por": "dono",
     });
     let aberta = linha_excecao(&excecao(base.clone()), 1000.0);
     assert_eq!(aberta.estado, "aberta");
@@ -269,6 +276,9 @@ fn linha_de_excecao_aberta_expirada_e_usada() {
     assert_eq!(aberta.alvo, "porta/segredo @push");
     assert_eq!(aberta.id, "e1");
     assert_eq!(aberta.motivo, "falso positivo em fixture");
+    assert_eq!(aberta.por, "dono");
+    assert_eq!(aberta.celulas().len(), COLUNAS_EXCECOES.len());
+    assert_eq!(COLUNAS_EXCECOES[4], "Por");
     assert!(!aberta.prazo.is_empty());
 
     let expirada = linha_excecao(&excecao(base.clone()), 3000.0);
@@ -279,11 +289,12 @@ fn linha_de_excecao_aberta_expirada_e_usada() {
 
     let mut usada = base.clone();
     usada["usada"] = json!("a7");
-    usada["alvo"] = json!({"repo": "acme/demo"});
+    usada["alvo"] = json!({"pr": "1234", "repo": "acme/demo"});
     let l = linha_excecao(&excecao(usada), 1000.0);
     assert_eq!(l.estado, "usada em a7");
-    assert_eq!(l.alvo, "porta/segredo @push {'repo': 'acme/demo'}");
-    assert_eq!(l.celulas()[4], "usada em a7");
+    assert_eq!(l.alvo, "porta/segredo @push pr=1234 repo=acme/demo");
+    assert_eq!(l.celulas()[4], "dono");
+    assert_eq!(l.celulas()[5], "usada em a7");
 
     let mut alvo_vazio = base;
     alvo_vazio["alvo"] = json!({});

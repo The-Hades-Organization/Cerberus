@@ -2,11 +2,12 @@
 //! `hades-core::config`, que grava em `$D/config.env` como o TS. A página fala com a [`FonteDeConfig`]; o painel do
 //! Hades pode trocá-la depois.
 
-use std::path::Path;
+use std::path::PathBuf;
 
 use hades_core::Env;
 use hades_core::config::{self, ConfigStore, Effective};
-use hades_core::paths::{find_state_dir, skill_root};
+use hades_core::fsx::read_text;
+use hades_core::paths::{hades_home, skill_root};
 
 use crate::vm::{self, Origem};
 
@@ -59,7 +60,15 @@ pub trait FonteDeConfig: Send + Sync {
     fn gravavel(&self) -> bool;
 }
 
-/// Fonte padrão: o `$D` do `cwd` e o kit da skill, como o CLI.
+/// `$D` da instalação: primeira linha de `~/.claude/hades/instance`, como o `config()` do Cerberus no TS
+/// (`src/lib/cerberus.ts:96`). Modos e Configurações leem por aqui, então mostram a mesma origem.
+pub fn pasta_da_instalacao(env: &Env) -> Option<PathBuf> {
+    let texto = read_text(&hades_home(env).join("instance"))?;
+    let primeira = texto.lines().next()?.trim();
+    (!primeira.is_empty()).then(|| PathBuf::from(primeira))
+}
+
+/// Fonte padrão: o `$D` da instalação e o kit da skill, como o `config()` do Cerberus.
 pub struct ConfigLocal {
     env: Env,
     store: ConfigStore,
@@ -67,9 +76,9 @@ pub struct ConfigLocal {
 }
 
 impl ConfigLocal {
-    pub fn new(env: &Env, cwd: &Path) -> Self {
+    pub fn new(env: &Env) -> Self {
         let kit = skill_root(env).join("kit");
-        let estado = find_state_dir(env, cwd);
+        let estado = pasta_da_instalacao(env);
         Self {
             instalado: estado.is_some(),
             store: ConfigStore {

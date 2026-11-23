@@ -22,6 +22,9 @@ fn sandbox() -> Sandbox {
     fs::create_dir_all(&kit).unwrap();
     fs::create_dir_all(&dados).unwrap();
     fs::write(kit.join("config.tsv"), KIT).unwrap();
+    let hh = dir.path().join(".claude/hades");
+    fs::create_dir_all(&hh).unwrap();
+    fs::write(hh.join("instance"), format!("{}\n", dados.display())).unwrap();
     let env = Env::empty()
         .with("HOME", dir.path().to_string_lossy())
         .with("HADES_SKILL_DIR", skill.to_string_lossy())
@@ -44,7 +47,7 @@ fn valor(s: &Sandbox, chave: &str) -> String {
 #[test]
 fn mostra_so_as_chaves_do_cerberus_com_tipo() {
     let s = sandbox();
-    let linhas = ConfigLocal::new(&s.env, &s.cwd).carregar().unwrap();
+    let linhas = ConfigLocal::new(&s.env).carregar().unwrap();
     let chaves: Vec<_> = linhas.iter().map(|l| l.chave.as_str()).collect();
     assert_eq!(
         chaves,
@@ -65,7 +68,7 @@ fn mostra_so_as_chaves_do_cerberus_com_tipo() {
 #[test]
 fn gravar_pela_pagina_e_ler_pelo_config_value_do_cli() {
     let s = sandbox();
-    let fonte = ConfigLocal::new(&s.env, &s.cwd);
+    let fonte = ConfigLocal::new(&s.env);
     let linhas = fonte.carregar().unwrap();
     let mut t = textos(&linhas);
     t[0] = " barra ".into();
@@ -92,7 +95,7 @@ fn gravar_pela_pagina_e_ler_pelo_config_value_do_cli() {
 #[test]
 fn recusa_valor_invalido_sem_gravar_nada() {
     let s = sandbox();
-    let fonte = ConfigLocal::new(&s.env, &s.cwd);
+    let fonte = ConfigLocal::new(&s.env);
     let linhas = fonte.carregar().unwrap();
     let mut t = textos(&linhas);
     t[0] = "bloqueia".into();
@@ -116,7 +119,7 @@ fn recusa_valor_invalido_sem_gravar_nada() {
 fn ambiente_vence_e_fica_so_leitura() {
     let s = sandbox();
     let env = s.env.clone().with("HADES_CERBERUS_PORTA", "off");
-    let fonte = ConfigLocal::new(&env, &s.cwd);
+    let fonte = ConfigLocal::new(&env);
     let linhas = fonte.carregar().unwrap();
     assert_eq!(linhas[0].valor, "off");
     assert!(linhas[0].somente_leitura());
@@ -130,10 +133,11 @@ fn ambiente_vence_e_fica_so_leitura() {
 #[test]
 fn sem_instalacao_nao_grava() {
     let s = sandbox();
+    fs::remove_file(s.cwd.join(".claude/hades/instance")).unwrap();
     let env = Env::empty()
         .with("HOME", s.cwd.to_string_lossy())
         .with("HADES_SKILL_DIR", s.cwd.join("skill").to_string_lossy());
-    let fonte = ConfigLocal::new(&env, &s.cwd);
+    let fonte = ConfigLocal::new(&env);
     assert!(!fonte.gravavel());
     let linhas = fonte.carregar().unwrap();
     let mut t = textos(&linhas);
@@ -146,13 +150,13 @@ fn chave_no_config_env_com_o_valor_do_padrao_vem_do_arquivo() {
     let s = sandbox();
     let dados = s.cwd.join("dados");
     fs::write(dados.join("config.env"), "HADES_CERBERUS_PORTA=avisa\n").unwrap();
-    let linhas = ConfigLocal::new(&s.env, &s.cwd).carregar().unwrap();
+    let linhas = ConfigLocal::new(&s.env).carregar().unwrap();
     assert_eq!(linhas[0].valor, "avisa");
     assert_eq!(linhas[0].origem, Origem::ConfigEnv);
     assert_eq!(linhas[1].origem, Origem::Padrao);
 
     let exportada = s.env.clone().with("HADES_CERBERUS_PORTA", "");
-    let linhas = ConfigLocal::new(&exportada, &s.cwd).carregar().unwrap();
+    let linhas = ConfigLocal::new(&exportada).carregar().unwrap();
     assert_eq!(
         (linhas[0].valor.as_str(), linhas[0].origem),
         ("", Origem::Env)

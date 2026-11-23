@@ -5,6 +5,7 @@ use cerberus_core::modelo::{Cabeca, Modo};
 use hades_core::Env;
 
 use super::*;
+use crate::config::FonteDeConfig;
 use crate::vm::Origem;
 
 fn escreve(raiz: &Path, rel: &str, texto: &str) {
@@ -131,4 +132,40 @@ fn abre_excecao_com_origem_do_app_e_recusa_motivo_curto() {
     assert_eq!(lista.len(), 1);
     assert_eq!(lista[0].id(), e.id());
     assert_eq!(d.ttl_h, Ok(48));
+}
+
+#[test]
+fn modos_e_configuracoes_dao_a_mesma_origem_com_hades_data_em_outra_pasta() {
+    let dir = tempfile::tempdir().unwrap();
+    let raiz = fs::canonicalize(dir.path()).unwrap();
+    escreve(&raiz, "outra/config.env", "");
+    let env = Env::empty()
+        .with("HADES_DATA", raiz.join("outra").to_string_lossy())
+        .with("HADES_SKILL_DIR", raiz.join("skill").to_string_lossy());
+    let op = caixa(&raiz, env.clone());
+    escreve(&raiz, "d/config.env", "HADES_CERBERUS_VIGILIA=barra\n");
+    escreve(
+        &raiz,
+        "skill/kit/config.tsv",
+        &["PORTA", "LIMIAR", "VIGILIA"]
+            .map(|c| {
+                format!(
+                    "HADES_CERBERUS_{c}\tbarra\tenum:off,avisa,barra\tCerberus\t{c}\tnext\tModo.\n"
+                )
+            })
+            .concat(),
+    );
+    let env = env.with("HOME", raiz.join("home").to_string_lossy());
+
+    let modos = carregar(op).unwrap().modos.unwrap();
+    let vigilia = modos.iter().find(|c| c.cabeca == Cabeca::Vigilia).unwrap();
+    let linhas = crate::config::ConfigLocal::new(&env).carregar().unwrap();
+    let linha = linhas
+        .iter()
+        .find(|l| l.chave == "HADES_CERBERUS_VIGILIA")
+        .unwrap();
+    assert_eq!(
+        (vigilia.origem, linha.origem),
+        (Origem::ConfigEnv, Origem::ConfigEnv)
+    );
 }
