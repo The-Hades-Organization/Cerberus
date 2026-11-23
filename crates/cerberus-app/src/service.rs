@@ -7,10 +7,11 @@ use cerberus_core::modelo::{Ctx, Dict, Excecao, Veredito, now_secs};
 use cerberus_core::registro::Guarda;
 use cerberus_core::{Cerberus, Opcoes, PedidoExcecao};
 use hades_core::Env;
+use hades_core::config::{self, ConfigStore};
 use hades_core::fsx::read_text;
-use hades_core::paths::hades_home;
+use hades_core::paths::{hades_home, skill_root};
 
-use crate::vm::{CABECAS, CartaoModo, chave_do_modo, origem_do_modo};
+use crate::vm::{CABECAS, CartaoModo, chave_do_modo, origem};
 
 /// Tudo o que as telas leem, numa ida ao disco.
 #[derive(Clone, Debug)]
@@ -37,13 +38,19 @@ fn pasta_da_instalacao(env: &Env) -> Option<PathBuf> {
 
 fn cartoes_de_modo(cerberus: &Cerberus, env: &Env) -> Result<Vec<CartaoModo>, String> {
     let modos = cerberus.modos().map_err(|e| e.to_string())?;
-    let config_env = pasta_da_instalacao(env).and_then(|d| read_text(&d.join("config.env")));
+    let no_arquivo = pasta_da_instalacao(env)
+        .map(|dir| {
+            config::load_values(&ConfigStore {
+                dir,
+                kit: skill_root(env).join("kit"),
+            })
+        })
+        .unwrap_or_default();
     Ok(CABECAS
         .iter()
         .map(|cab| {
             let chave = chave_do_modo(*cab);
-            let origem =
-                origem_do_modo(&chave, env.get_raw(&chave).is_some(), config_env.as_deref());
+            let origem = origem(env.get_raw(&chave).is_some(), no_arquivo.has(&chave));
             CartaoModo {
                 cabeca: *cab,
                 chave,

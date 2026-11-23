@@ -80,7 +80,7 @@ fn gravar_pela_pagina_e_ler_pelo_config_value_do_cli() {
         "*.demo.test,acme-?"
     );
     let depois = fonte.carregar().unwrap();
-    assert_eq!(depois[0].origem, Origem::Arquivo);
+    assert_eq!(depois[0].origem, Origem::ConfigEnv);
 
     let mut t = textos(&depois);
     t[2] = "  ".into();
@@ -139,4 +139,23 @@ fn sem_instalacao_nao_grava() {
     let mut t = textos(&linhas);
     t[1] = "40".into();
     assert!(salvar(&fonte, &linhas, &t).is_err());
+}
+
+#[test]
+fn chave_no_config_env_com_o_valor_do_padrao_vem_do_arquivo() {
+    let s = sandbox();
+    let dados = s.cwd.join("dados");
+    fs::write(dados.join("config.env"), "HADES_CERBERUS_PORTA=avisa\n").unwrap();
+    let linhas = ConfigLocal::new(&s.env, &s.cwd).carregar().unwrap();
+    assert_eq!(linhas[0].valor, "avisa");
+    assert_eq!(linhas[0].origem, Origem::ConfigEnv);
+    assert_eq!(linhas[1].origem, Origem::Padrao);
+
+    let exportada = s.env.clone().with("HADES_CERBERUS_PORTA", "");
+    let linhas = ConfigLocal::new(&exportada, &s.cwd).carregar().unwrap();
+    assert_eq!(
+        (linhas[0].valor.as_str(), linhas[0].origem),
+        ("", Origem::Env)
+    );
+    assert!(linhas[0].somente_leitura());
 }

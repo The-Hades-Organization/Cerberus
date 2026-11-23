@@ -70,8 +70,11 @@ impl Tela {
     }
 }
 
-/// Atalho de teclado: `1` a `6` trocam de tela, na ordem do trilho.
-pub fn tela_da_tecla(tecla: &str) -> Option<Tela> {
+/// Atalho de teclado: `1` a `6` trocam de tela, na ordem do trilho; com um campo de texto focado a tecla é do campo.
+pub fn tela_da_tecla(tecla: &str, campo_focado: bool) -> Option<Tela> {
+    if campo_focado {
+        return None;
+    }
     let n: usize = tecla.parse().ok()?;
     Tela::TODAS.get(n.checked_sub(1)?).copied()
 }
@@ -273,7 +276,17 @@ impl LinhaVeredito {
             self.evidencia.clone(),
         ]
     }
+
+    /// Tom de cada célula: só a coluna Veredito tem cor (barrado vermelho, aviso âmbar, passa verde).
+    pub fn tons(&self) -> [Option<Tone>; 6] {
+        let mut tons = [None; 6];
+        tons[COLUNA_DO_VEREDITO] = Some(self.tom);
+        tons
+    }
 }
+
+/// Índice da coluna Veredito em [`COLUNAS_VEREDITOS`].
+pub const COLUNA_DO_VEREDITO: usize = 4;
 
 pub const COLUNAS_VEREDITOS: [&str; 6] = [
     "Hora",
@@ -468,7 +481,7 @@ pub fn erros_por_cabeca(erros: &[String]) -> Vec<(String, Vec<String>)> {
     grupos.into_iter().map(|g| (g.1, g.2)).collect()
 }
 
-/// De onde vem o modo efetivo de uma cabeça.
+/// De onde vem o valor efetivo de uma chave.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Origem {
     Env,
@@ -491,16 +504,14 @@ pub fn chave_do_modo(cab: Cabeca) -> String {
     format!("HADES_CERBERUS_{}", cab.as_str().to_uppercase())
 }
 
-/// A mesma precedência do `config` do core: variável exportada (vazia inclusive) > linha do `config.env` > padrão.
-pub fn origem_do_modo(chave: &str, no_env: bool, config_env: Option<&str>) -> Origem {
+/// De onde vale uma chave `HADES_CERBERUS_*`, a mesma regra nas telas Modos e Configurações. É a precedência de
+/// `config()` (`src/lib/cerberus.ts:94`): variável exportada (vazia inclusive) > chave presente no `config.env`
+/// (`loadValues`, `src/lib/config-catalog.ts:106`), mesmo com o valor do padrão > padrão. O `changed` de `effective`
+/// (`config-catalog.ts:229`) diz só se o valor difere do padrão; não é origem.
+pub fn origem(no_env: bool, no_arquivo: bool) -> Origem {
     if no_env {
-        return Origem::Env;
-    }
-    let no_arquivo = config_env.is_some_and(|t| {
-        t.lines()
-            .any(|l| l.split_once('=').is_some_and(|(k, _)| k == chave))
-    });
-    if no_arquivo {
+        Origem::Env
+    } else if no_arquivo {
         Origem::ConfigEnv
     } else {
         Origem::Padrao
@@ -561,14 +572,6 @@ pub fn nome_da_chave_de_modo(chave: &str) -> String {
         .iter()
         .find(|c| chave_do_modo(**c) == chave)
         .map_or_else(|| chave.to_owned(), |c| c.nome().to_owned())
-}
-
-pub fn rotulo_da_origem(origem: crate::config::Origem) -> &'static str {
-    match origem {
-        crate::config::Origem::Ambiente => Origem::Env.rotulo(),
-        crate::config::Origem::Arquivo => Origem::ConfigEnv.rotulo(),
-        crate::config::Origem::Padrao => Origem::Padrao.rotulo(),
-    }
 }
 
 pub fn configuracoes(n: usize) -> String {

@@ -11,8 +11,8 @@ use hades_ui::components::{
 use hades_ui::tokens::space;
 
 use super::CerberusView;
-use crate::config::{self, FonteDeConfig, Linha, Origem};
-use crate::vm;
+use crate::config::{self, FonteDeConfig, Linha};
+use crate::vm::{self, Origem};
 
 /// Campos da página, criados quando a leitura chega e a janela está à mão.
 pub(super) struct CfgEstado {
@@ -26,8 +26,8 @@ pub(super) type LeituraCfg = Result<Vec<Linha>, String>;
 fn origem(o: Origem) -> SettingOrigin {
     match o {
         Origem::Padrao => SettingOrigin::Default,
-        Origem::Arquivo => SettingOrigin::File,
-        Origem::Ambiente => SettingOrigin::Env,
+        Origem::ConfigEnv => SettingOrigin::File,
+        Origem::Env => SettingOrigin::Env,
     }
 }
 
@@ -141,7 +141,7 @@ impl CerberusView {
                 MetaList::new()
                     .label_width(72.0)
                     .mono("Chave", linha.chave.clone())
-                    .row("Origem", vm::rotulo_da_origem(linha.origem)),
+                    .row("Origem", linha.origem.rotulo()),
             );
         if linha.somente_leitura() {
             return cartao

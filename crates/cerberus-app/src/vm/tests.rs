@@ -41,16 +41,22 @@ fn tarefa_descarta_geracao_velha() {
 
 #[test]
 fn telas_na_ordem_do_trilho() {
-    assert_eq!(tela_da_tecla("1"), Some(Tela::Vereditos));
-    assert_eq!(tela_da_tecla("6"), Some(Tela::Configuracoes));
-    assert_eq!(tela_da_tecla("0"), None);
-    assert_eq!(tela_da_tecla("7"), None);
-    assert_eq!(tela_da_tecla("a"), None);
+    assert_eq!(tela_da_tecla("1", false), Some(Tela::Vereditos));
+    assert_eq!(tela_da_tecla("6", false), Some(Tela::Configuracoes));
+    assert_eq!(tela_da_tecla("0", false), None);
+    assert_eq!(tela_da_tecla("7", false), None);
+    assert_eq!(tela_da_tecla("a", false), None);
     for t in Tela::TODAS {
         assert_eq!(Tela::de_rotulo(t.rotulo()), Some(t));
     }
     assert_eq!(Tela::de_nome("modos"), Some(Tela::Modos));
     assert_eq!(Tela::de_nome("x"), None);
+}
+
+#[test]
+fn atalho_de_tela_nao_vale_com_campo_focado() {
+    assert_eq!(tela_da_tecla("1", true), None);
+    assert_eq!(tela_da_tecla("3", true), None);
 }
 
 #[test]
@@ -107,6 +113,22 @@ fn evidencia_nunca_traz_o_trecho() {
     assert_eq!(linha.cabeca, "Porta");
     assert_eq!(linha.tom, Tone::Bad);
     assert_eq!(linha.celulas().len(), COLUNAS_VEREDITOS.len());
+}
+
+#[test]
+fn so_a_coluna_veredito_tem_cor() {
+    assert_eq!(COLUNAS_VEREDITOS[COLUNA_DO_VEREDITO], "Veredito");
+    for (efeito, rotulo, tom) in [
+        ("barra", "barrado", Tone::Bad),
+        ("aviso", "aviso", Tone::Warn),
+        ("ok", "passa", Tone::Ok),
+    ] {
+        let linha = linha_veredito(&registro("t", "porta", "g", efeito));
+        assert_eq!(linha.celulas()[COLUNA_DO_VEREDITO], rotulo);
+        let tons = linha.tons();
+        assert_eq!(tons[COLUNA_DO_VEREDITO], Some(tom));
+        assert_eq!(tons.iter().flatten().count(), 1);
+    }
 }
 
 #[test]
@@ -213,19 +235,11 @@ fn erros_agrupados_na_ordem_das_cabecas() {
 
 #[test]
 fn origem_env_vence_config_env_que_vence_padrao() {
-    let chave = chave_do_modo(Cabeca::Limiar);
-    assert_eq!(chave, "HADES_CERBERUS_LIMIAR");
-    let arquivo = "OUTRA=1\nHADES_CERBERUS_LIMIAR=avisa\n";
-    assert_eq!(origem_do_modo(&chave, true, Some(arquivo)), Origem::Env);
-    assert_eq!(
-        origem_do_modo(&chave, false, Some(arquivo)),
-        Origem::ConfigEnv
-    );
-    assert_eq!(
-        origem_do_modo(&chave, false, Some("HADES_CERBERUS_LIMIAR_X=1")),
-        Origem::Padrao
-    );
-    assert_eq!(origem_do_modo(&chave, false, None), Origem::Padrao);
+    assert_eq!(chave_do_modo(Cabeca::Limiar), "HADES_CERBERUS_LIMIAR");
+    assert_eq!(origem(true, true), Origem::Env);
+    assert_eq!(origem(true, false), Origem::Env);
+    assert_eq!(origem(false, true), Origem::ConfigEnv);
+    assert_eq!(origem(false, false), Origem::Padrao);
 }
 
 #[test]

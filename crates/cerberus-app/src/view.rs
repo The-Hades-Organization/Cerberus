@@ -2,14 +2,16 @@
 
 mod config;
 mod excecoes;
+mod tabela;
 
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
 use gpui::{
-    App, AppContext, Context, Entity, FocusHandle, InteractiveElement, IntoElement, KeyDownEvent,
-    ParentElement, Render, SharedString, StatefulInteractiveElement, Styled, Window, div, px,
+    App, AppContext, Context, Entity, FocusHandle, Focusable, InteractiveElement, IntoElement,
+    KeyDownEvent, ParentElement, Render, SharedString, StatefulInteractiveElement, Styled, Window,
+    div, px,
 };
 use hades_core::Env;
 use hades_ui::components::{
@@ -17,11 +19,13 @@ use hades_ui::components::{
     RailBrand, RailGroup, RailItem, Segmented, Skeleton, StatusBadge, StatusBar, TermBlock,
 };
 use hades_ui::icons::IconName;
-use hades_ui::tokens::space;
+use hades_ui::tokens::{FONT_HEADING, size, space};
 use hades_ui::{Tone, palette};
 
 use crate::config::{ConfigLocal, FonteDeConfig};
 use crate::service::{self, Dados};
+use tabela::TabelaTonada;
+
 use crate::vm::{self, CABECAS, COLUNAS_GUARDAS, COLUNAS_VEREDITOS, Filtro, Tarefa, Tela};
 
 const PERIODO_MS: u64 = 1000;
@@ -251,24 +255,28 @@ impl CerberusView {
         KpiStrip::new(itens)
     }
 
-    fn tabela_dos_vereditos(&self, visiveis: &[usize], cx: &mut Context<Self>) -> DataTable {
+    fn tabela_dos_vereditos(&self, visiveis: &[usize], cx: &mut Context<Self>) -> TabelaTonada {
         let entidade = cx.entity();
-        let colunas = COLUNAS_VEREDITOS
-            .iter()
-            .map(|n| (SharedString::from(*n), Align::Start))
-            .collect::<Vec<_>>();
-        let mut tabela = DataTable::new(colunas)
-            .fill("tabela-vereditos")
-            .empty("Nenhum veredito neste filtro");
+        let mut tabela = TabelaTonada::new(
+            "tabela-vereditos",
+            COLUNAS_VEREDITOS.iter().map(|n| SharedString::from(*n)),
+            "Nenhum veredito neste filtro",
+        );
         let hist = self.historico();
         for i in visiveis {
             let linha = vm::linha_veredito(&hist[*i]);
-            tabela = tabela.row(linha.celulas().into_iter().map(SharedString::from));
+            tabela = tabela.linha(
+                linha
+                    .celulas()
+                    .into_iter()
+                    .map(SharedString::from)
+                    .zip(linha.tons()),
+            );
         }
         if let Some(p) = vm::posicao_da_selecao(hist, visiveis, self.selecionado.as_deref()) {
-            tabela = tabela.selected(p);
+            tabela = tabela.selecionada(p);
         }
-        tabela.on_select(move |p, _, cx| {
+        tabela.ao_escolher(move |p, _, cx| {
             entidade.update(cx, |v, cx| {
                 v.selecionar(p);
                 cx.notify();
@@ -301,23 +309,34 @@ impl CerberusView {
                 .mono("Onde", e.onde.clone())
                 .row("Conferido", e.conferido.clone());
         }
-        let mut cartao = Card::new()
-            .title(i.titulo)
-            .status(StatusBadge::new(i.veredito, i.tom))
-            .child(meta)
-            .child(evidencia);
+        let titulo = div()
+            .flex()
+            .items_start()
+            .gap(px(space::MD))
+            .child(
+                div()
+                    .flex_1()
+                    .min_w_0()
+                    .font_family(FONT_HEADING)
+                    .text_size(px(size::SECTION))
+                    .child(i.titulo),
+            )
+            .child(div().flex_none().child(StatusBadge::new(i.veredito, i.tom)));
+        let mut cartao = Card::new().child(titulo).child(meta).child(evidencia);
         if let Some(d) = i.detalhe {
             cartao = cartao.child(TermBlock::new().line(d));
         }
         cartao
-            .note("O trecho achado nunca aparece inteiro.")
-            .action(
-                Button::new("criar-excecao", "Criar exceção")
-                    .icon(IconName::ShieldOff)
-                    .on_click(cx.listener(move |v, _, _, cx| {
-                        v.criar_excecao_de(&cab, &guarda, &momento, cx)
-                    })),
+            .child(
+                div().flex().child(
+                    Button::new("criar-excecao", "Criar exceção")
+                        .icon(IconName::ShieldOff)
+                        .on_click(cx.listener(move |v, _, _, cx| {
+                            v.criar_excecao_de(&cab, &guarda, &momento, cx)
+                        })),
+                ),
             )
+            .note("O trecho achado nunca aparece inteiro.")
             .into_any_element()
     }
 
@@ -470,6 +489,22 @@ impl CerberusView {
     }
 }
 
+impl CerberusView {
+    fn campo_focado(&self, window: &Window, cx: &App) -> bool {
+        let cfg = self.cfg.iter().flat_map(|c| c.entradas.iter());
+        let form = [
+            &self.form.motivo,
+            &self.form.ttl,
+            &self.form.alvo,
+            &self.ensaio.texto,
+        ]
+        .into_iter()
+        .flatten();
+        cfg.chain(form)
+            .any(|e| e.read(cx).focus_handle(cx).is_focused(window))
+    }
+}
+
 impl Render for CerberusView {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         match self.tela {
@@ -491,8 +526,9 @@ impl Render for CerberusView {
         div()
             .id("cerberus")
             .track_focus(&self.foco)
-            .on_key_down(cx.listener(|v, ev: &KeyDownEvent, _, cx| {
-                if let Some(t) = vm::tela_da_tecla(&ev.keystroke.key) {
+            .on_key_down(cx.listener(|v, ev: &KeyDownEvent, window, cx| {
+                let campo_focado = v.campo_focado(window, cx);
+                if let Some(t) = vm::tela_da_tecla(&ev.keystroke.key, campo_focado) {
                     v.mudar_tela(t, cx);
                     cx.notify();
                 }

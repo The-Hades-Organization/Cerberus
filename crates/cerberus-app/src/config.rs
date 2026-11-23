@@ -8,16 +8,10 @@ use hades_core::Env;
 use hades_core::config::{self, ConfigStore, Effective};
 use hades_core::paths::{find_state_dir, skill_root};
 
+use crate::vm::{self, Origem};
+
 /// Prefixo das chaves que a página mostra.
 pub const PREFIXO: &str = "HADES_CERBERUS_";
-
-/// De onde vale o valor mostrado.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Origem {
-    Padrao,
-    Arquivo,
-    Ambiente,
-}
 
 /// Uma chave com o valor que vale agora.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -45,7 +39,7 @@ impl Linha {
     }
 
     pub fn somente_leitura(&self) -> bool {
-        self.origem == Origem::Ambiente
+        self.origem == Origem::Env
     }
 }
 
@@ -90,10 +84,14 @@ impl ConfigLocal {
 impl FonteDeConfig for ConfigLocal {
     fn carregar(&self) -> Result<Vec<Linha>, String> {
         let efetivas = config::effective(&self.store).map_err(|e| e.0)?;
+        let no_arquivo = config::load_values(&self.store);
         Ok(efetivas
             .into_iter()
             .filter(|e| e.item.key.starts_with(PREFIXO))
-            .map(|e| self.linha(e))
+            .map(|e| {
+                let no_arquivo = no_arquivo.has(&e.item.key);
+                self.linha(e, no_arquivo)
+            })
             .collect())
     }
 
@@ -117,12 +115,10 @@ impl FonteDeConfig for ConfigLocal {
 }
 
 impl ConfigLocal {
-    fn linha(&self, e: Effective) -> Linha {
-        let (valor, origem) = match self.env.get_raw(&e.item.key) {
-            Some(v) => (v.to_owned(), Origem::Ambiente),
-            None if e.changed => (e.value, Origem::Arquivo),
-            None => (e.value, Origem::Padrao),
-        };
+    fn linha(&self, e: Effective, no_arquivo: bool) -> Linha {
+        let exportada = self.env.get_raw(&e.item.key);
+        let origem = vm::origem(exportada.is_some(), no_arquivo);
+        let valor = exportada.map_or(e.value, str::to_owned);
         Linha {
             chave: e.item.key,
             grupo: e.item.group,
