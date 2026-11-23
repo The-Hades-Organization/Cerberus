@@ -24,7 +24,7 @@ env:
   # sha do Hades-Skill contra o qual o job parity roda; trocar é mudança explícita, e o diff da matriz mostra o que mudou no TS
   HADES_SKILL_SHA: f831727b336e6fcd736f032ac23e8509c98d29eb
   # tag do Hades-Core de onde sai o runner da matriz
-  HADES_CORE_TAG: v0.2.5
+  HADES_CORE_TAG: v0.2.7
 
 permissions:
   contents: read
