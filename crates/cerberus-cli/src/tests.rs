@@ -320,7 +320,7 @@ fn check_sem_guarda_portada_responde_o_uso() {
     let ce = CheckEnv::default();
     for args in [
         &[][..],
-        &["limiar", "x"][..],
+        &["limiar/x"][..],
         &["porta/fantasma"][..],
         &["vigilia/auditoria"][..],
     ] {

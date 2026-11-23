@@ -422,15 +422,30 @@ fn rodar(argv: &[String], op: &Opcoes, s: &mut Saida) -> Result<i32, Erro> {
 
 const USO_CHECK: &str = "uso: hades cerberus-check <porta/<guarda> | limiar <guarda> | vigilia/auditoria <guarda> | vigilia/coerencia <guarda>>  (ambiente: CERBERUS_DIR, CERBERUS_SKILL, CERBERUS_MOMENTO, CERBERUS_CTX)";
 
-/// `cerberusCheckCommand` (`src/commands/cerberus-check.ts:32`): roda uma guarda portada e imprime o veredito numa
-/// linha JSON. Só a Porta está portada; Limiar e Vigília respondem o uso, saída 2, até chegarem.
-fn check(args: &[String], ce: &CheckEnv, out: &mut dyn Write, err: &mut dyn Write) -> i32 {
+/// `evaluate` (`src/commands/cerberus-check.ts:12`): a Porta e o Limiar portados; a Vigília responde o uso.
+fn avalia(args: &[String], ce: &CheckEnv) -> Option<cerberus_core::check::CheckVerdict> {
     let alvo = args.first().map(String::as_str).unwrap_or("");
-    let (cab, id) = alvo.split_once('/').unwrap_or((alvo, ""));
-    let veredito = (cab == "porta")
-        .then(|| cerberus_core::porta::guarda(id))
-        .flatten()
-        .map(|g| g(ce));
+    let arg = args.get(1).map(String::as_str);
+    let extra = args.len() > 2;
+    let mut partes = alvo.split('/');
+    let cab = partes.next().unwrap_or("");
+    let id = partes.next();
+    match cab {
+        "porta" => id
+            .filter(|i| !i.is_empty())
+            .and_then(cerberus_core::porta::guarda)
+            .map(|g| g(ce)),
+        "limiar" if !(id.is_some_and(|i| !i.is_empty()) || extra) => {
+            cerberus_core::limiar::rodar(arg.unwrap_or(""), ce)
+        }
+        _ => None,
+    }
+}
+
+/// `cerberusCheckCommand` (`src/commands/cerberus-check.ts:32`): roda uma guarda portada e imprime o veredito numa
+/// linha JSON; sem veredito, o uso do alvo (`usageOf`, `:25`) e saída 2.
+fn check(args: &[String], ce: &CheckEnv, out: &mut dyn Write, err: &mut dyn Write) -> i32 {
+    let veredito = avalia(args, ce);
     let mut s = Saida { out, err };
     match veredito {
         Some(v) => {
@@ -438,7 +453,12 @@ fn check(args: &[String], ce: &CheckEnv, out: &mut dyn Write, err: &mut dyn Writ
             OK
         }
         None => {
-            s.warn(USO_CHECK);
+            let uso = if args.first().map(String::as_str) == Some("limiar") {
+                cerberus_core::limiar::USO
+            } else {
+                USO_CHECK
+            };
+            s.warn(uso);
             USO
         }
     }

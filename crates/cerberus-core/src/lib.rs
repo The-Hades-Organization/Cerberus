@@ -10,6 +10,7 @@ pub mod config;
 pub mod ctx;
 pub mod efeito;
 pub mod executor;
+pub mod limiar;
 pub mod modelo;
 pub mod porta;
 pub mod registro;
