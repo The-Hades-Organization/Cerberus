@@ -1,7 +1,8 @@
 # Casos cujo veredito traz o texto do erro do parser de JSON (Bun no TS, serde no Rust; divergência D5 do
 # plano). Roda à parte porque os dois lados passam por parity/normalizar-parser.sh, que troca esse trecho por
 # `<erro do parser>` como o golden legado: o TS por parity/ts-check-parser.ts e o Rust com `--rust parity/rust-parser.sh`.
-# Origem: um caso da Porta (cases-porta.toml) e dois do Limiar (cases-limiar.toml, update b-perfil); setups os de lá.
+# Origem: um caso da Porta (cases-porta.toml), dois do Limiar (cases-limiar.toml, update b-perfil) e três da Vigília
+# (cases-vigilia.toml: registro, consolidação e plan.json ilegíveis); setups os de lá.
 
 [[case]]
 id = "porta.plano-aprovado.registro-ilegivel"
@@ -28,4 +29,31 @@ argv = ["check", "limiar", "invariante"]
 ts_cmd = ["{cases_dir}/ts-check-parser.ts", "{skill}"]
 setup = "setup/limiar-update.sh"
 env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"ea0fc4ed4f9903da6b409d72468910b9afe8da3f\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.009.alvos.registro-ilegivel"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check-parser.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v009"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag009\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.014.alvos.consolidacao-ilegivel"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check-parser.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v014"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "consolidar", CERBERUS_CTX = "{\"branch\":\"hades/ruim\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.092.plano.plan-json-ilegivel"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check-parser.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v092"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag092\"}" }
 compare = ["stdout", "stderr", "exit"]

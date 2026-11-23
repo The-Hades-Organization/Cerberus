@@ -5,7 +5,7 @@
 t=$(mktemp -d)
 "$@" >"$t/out" 2>"$t/err"
 rc=$?
-n() { sed -E 's/(ilegível|ilegível ou sem path\/sha): [^"]*/\1: <erro do parser>/' "$1"; }
+n() { sed -E -e 's/(ilegível|ilegível ou sem path\/sha): [^"]*/\1: <erro do parser>/' -e 's/ilegível \((JSON Parse error: [^)]*|[^()"]* at line [0-9]+ column [0-9]+)\)/ilegível (<erro do parser>)/g' "$1"; }
 n "$t/out"
 n "$t/err" >&2
 rm -rf "$t"

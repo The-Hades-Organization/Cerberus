@@ -110,6 +110,12 @@ jobs:
           --cases parity/cases-limiar.toml
           --ts "$RUNNER_TEMP/skill"
           --rust target/debug/cerberus
+      - name: Matriz da Vigília
+        run: >
+          "$RUNNER_TEMP/hades-parity/bin/hades-parity" run
+          --cases parity/cases-vigilia.toml
+          --ts "$RUNNER_TEMP/skill"
+          --rust target/debug/cerberus
       - name: Concorrência TS x Rust
         run: parity/concorrencia.sh "$RUNNER_TEMP/skill" target/debug/cerberus
 

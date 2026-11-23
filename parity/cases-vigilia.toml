@@ -1,0 +1,924 @@
+# Matriz de paridade da Vigília: `hades cerberus-check vigilia/<auditoria|coerencia> <guarda>` (TS, Hades-Skill) contra
+# `cerberus check vigilia/...`. O lado TS passa por parity/ts-check.ts. Origem: as 105 chamadas do golden legado
+# (loop/test/golden/legado/cerberus-vigilia-legado.json, loop/test/ts/cerberus-vigilia-legado.test.ts), na ordem dele; o
+# número no id e no cwd é o da chamada. parity/setup/vigilia.sh monta o estado de cada caso pelo cwd (`vNNN`).
+# Os casos 009, 014 e 092 ficam em cases-parser.toml (erro do parser de JSON normalizado nos dois lados, D5).
+
+[[case]]
+id = "vigilia.000.uso.sem-guarda"
+argv = ["check", "vigilia/auditoria"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v000"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.001.uso.guarda-desconhecida"
+argv = ["check", "vigilia/auditoria", "nada"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v001"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.002.uso.guarda-a-mais"
+argv = ["check", "vigilia/coerencia", "registro", "x"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v002"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.003.uso.coerencia-desconhecida"
+argv = ["check", "vigilia/coerencia", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v003"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.004.alvos.done-sem-agente"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v004"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.005.alvos.agente-fora-do-padrao"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v005"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"../x\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.006.alvos.agente-sem-registro"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v006"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"fantasma\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.007.alvos.contexto-lista"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v007"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "[1]" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.008.alvos.contexto-ilegivel"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v008"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{nao" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.010.alvos.registro-nao-objeto"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v010"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag010\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.011.alvos.fora-do-done-sem-registro"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v011"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.012.alvos.consolidacao-sem-membros"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v012"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "consolidar", CERBERUS_CTX = "{\"branch\":\"hades/x\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.013.alvos.consolidacao-com-membros"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v013"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "consolidar", CERBERUS_CTX = "{\"branch\":\"hades/cons\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.015.alvos.dois-repos-vale-o-do-dir"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v015"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"dup\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.016.alvos.dois-repos-ambiguo"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v016"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"dup\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.017.status.done"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v017"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag017\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.018.status.parked"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v018"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag018\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.019.status.report-vazio"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v019"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag019\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.020.status.report-ausente"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v020"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag020\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.021.status.pasta-configurada"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v021"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", HADES_ORCH_REPORTS_DIR = "outra", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag021\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.022.gates.sem-gate"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v022"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag022\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.023.gates.sem-registro"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v023"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag023\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.024.gates.rc0"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v024"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag024\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.025.gates.ultimo-rc1"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v025"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag025\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.026.gates.anterior-a-criacao"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v026"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag026\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.027.gates.test-integration"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v027"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag027\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.028.gates.bloco-com-falha"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v028"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag028\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.029.gates.titulo-e-corpo"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v029"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag029\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.030.gates.cerca"
+argv = ["check", "vigilia/auditoria", "gates"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v030"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag030\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.031.capturas.sem-captura"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v031"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag031\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.032.capturas.existente"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v032"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag032\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.033.capturas.ausente"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v033"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag033\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.034.capturas.vazia"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v034"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag034\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.035.capturas.pasta-inexistente"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v035"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag035\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.036.capturas.molde"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v036"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag036\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.037.capturas.subpasta"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v037"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag037\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.038.capturas.herda-pasta"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v038"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag038\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.039.capturas.absoluto-e-til"
+argv = ["check", "vigilia/auditoria", "capturas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v039"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag039\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.040.commits.sem-commit"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v040"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag040\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.041.commits.na-branch"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v041"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag041\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.042.commits.inexistente-na-branch"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v042"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag042\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.043.commits.inexistente-outra-ref"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v043"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag043\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.044.commits.inexistente-fora"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v044"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag044\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.045.commits.fora-da-branch"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v045"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag045\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.046.commits.arvore"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v046"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag046\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.047.commits.sem-fala"
+argv = ["check", "vigilia/auditoria", "commits"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v047"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag047\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.048.escopo.brief-ausente"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v048"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag048\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.049.escopo.sem-escopo"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v049"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag049\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.050.escopo.dentro"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v050"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag050\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.051.escopo.nao-toque"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v051"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag051\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.052.escopo.prefixo-proibido"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v052"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag052\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.053.escopo.fora"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v053"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag053\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.054.escopo.fora-registrado"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v054"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag054\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.055.escopo.base-nao-resolve"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v055"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag055\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.056.escopo.base-vazia"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v056"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag056\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.057.escopo.so-nao-toque"
+argv = ["check", "vigilia/auditoria", "escopo"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v057"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag057\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.058.perguntas.sem-questions"
+argv = ["check", "vigilia/auditoria", "perguntas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v058"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag058\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.059.perguntas.aberta"
+argv = ["check", "vigilia/auditoria", "perguntas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v059"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag059\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.060.perguntas.respondida-titulo"
+argv = ["check", "vigilia/auditoria", "perguntas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v060"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag060\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.061.perguntas.respondida-secao"
+argv = ["check", "vigilia/auditoria", "perguntas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v061"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag061\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.062.perguntas.fora-do-done"
+argv = ["check", "vigilia/auditoria", "perguntas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v062"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag062\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.063.perguntas.muitas"
+argv = ["check", "vigilia/auditoria", "perguntas"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v063"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag063\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.064.registro.confere"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v064"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag064\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.065.registro.worktree-inexistente"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v065"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag065\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.066.registro.branch-diferente"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v066"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag066\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.067.registro.modo-review"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v067"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag067\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.068.registro.base-sha-inexistente"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v068"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag068\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.069.registro.base-ref-inexistente"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v069"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag069\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.070.registro.base-nao-ancestral"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v070"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag070\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.071.registro.base-ref-movel"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v071"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag071\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.072.registro.herdr-indisponivel"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v072"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag072\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.073.registro.herdr-nao-json"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v073"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag073\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.074.registro.herdr-sem-agents"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v074"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag074\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.075.registro.outro-painel"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v075"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag075\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.076.registro.orfa-painel"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v076"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag076\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.077.registro.orfa-cwd"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v077"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag077\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.078.registro.sem-sessao"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v078"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag078\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.079.registro.concluido"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v079"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag079\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.080.registro.pr-ausente"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v080"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag080\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.081.registro.pr-ausente-sem-numero"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v081"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag081\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.082.registro.pr-divergente"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v082"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag082\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.083.registro.pr-fechada"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v083"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag083\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.084.registro.pr-mergeada-ativo"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v084"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag084\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.085.registro.pr-outra-branch"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v085"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag085\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.086.registro.pr-primeira"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v086"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag086\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.087.registro.gh-falha"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v087"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag087\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.088.registro.gh-lixo"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v088"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag088\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.089.registro.modo-skill"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v089"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag089\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.090.registro.sem-branch"
+argv = ["check", "vigilia/coerencia", "registro"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v090"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag090\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.091.plano.sem-plan-json"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v091"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag091\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.093.plano.plan-json-sem-path"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v093"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag093\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.094.plano.plano-inexistente"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v094"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag094\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.095.plano.sem-estado-atual"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v095"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag095\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.096.plano.ativo-ausente"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v096"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag096\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.097.plano.concluido-ausente"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v097"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag097\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.098.plano.linha-confere"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v098"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag098\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.099.plano.linha-diverge"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v099"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag099\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.100.plano.commit-inexistente"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v100"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag100\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.101.plano.commit-existente"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v101"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag101\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.102.plano.varios-agentes"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v102"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag102\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.103.plano.modo-skill"
+argv = ["check", "vigilia/coerencia", "plano"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v103"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "done", CERBERUS_CTX = "{\"agente\":\"ag103\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "vigilia.104.evidencia.consolidacao-12"
+argv = ["check", "vigilia/auditoria", "status"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/vigilia.sh"
+cwd = "v104"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "consolidar", CERBERUS_CTX = "{\"branch\":\"hades/muitos\"}" }
+compare = ["stdout", "stderr", "exit"]
+
