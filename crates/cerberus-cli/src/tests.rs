@@ -314,3 +314,34 @@ fn modos_excecao_e_estado() {
     let v: Value = serde_json::from_str(&out).unwrap();
     assert_eq!(v["barrados"][0]["vezes"], 1);
 }
+
+#[test]
+fn check_sem_guarda_portada_responde_o_uso() {
+    let ce = CheckEnv::default();
+    for args in [
+        &[][..],
+        &["limiar", "x"][..],
+        &["porta/fantasma"][..],
+        &["vigilia/auditoria"][..],
+    ] {
+        let args: Vec<String> = args.iter().map(|a| (*a).to_string()).collect();
+        let (mut out, mut err) = (Vec::new(), Vec::new());
+        assert_eq!(check(&args, &ce, &mut out, &mut err), 2, "{args:?}");
+        assert!(out.is_empty());
+        assert!(String::from_utf8_lossy(&err).contains(USO_CHECK));
+    }
+}
+
+#[test]
+fn check_da_porta_imprime_o_veredito_numa_linha() {
+    let ce = CheckEnv::default();
+    let (mut out, mut err) = (Vec::new(), Vec::new());
+    assert_eq!(
+        check(&["porta/tunel-acesso".to_string()], &ce, &mut out, &mut err),
+        0
+    );
+    let texto = String::from_utf8(out).unwrap();
+    assert_eq!(texto.lines().count(), 1);
+    let v: Value = serde_json::from_str(texto.trim_end()).unwrap();
+    assert_eq!(v["resultado"], "barra");
+}

@@ -811,9 +811,11 @@ version = "0.1.0"
 dependencies = [
  "hades-core",
  "indexmap",
+ "regex",
  "serde",
  "serde_json",
  "tempfile",
+ "url",
 ]
 
 [[package]]

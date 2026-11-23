@@ -5,11 +5,13 @@
 //! `excecoes.json`) saem byte a byte iguais aos do TS.
 
 pub mod avaliacao;
+pub mod check;
 pub mod config;
 pub mod ctx;
 pub mod efeito;
 pub mod executor;
 pub mod modelo;
+pub mod porta;
 pub mod registro;
 pub mod store;
 

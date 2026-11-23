@@ -5,6 +5,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+use cerberus_core::check::CheckEnv;
 use cerberus_core::modelo::{Dict, js_string, now_iso, py_repr};
 use cerberus_core::{
     Cerberus, Entrada, Erro, Opcoes, PedidoExcecao, PedidoRegistro, ctx::parse_ctx,
@@ -419,6 +420,30 @@ fn rodar(argv: &[String], op: &Opcoes, s: &mut Saida) -> Result<i32, Erro> {
     }
 }
 
+const USO_CHECK: &str = "uso: hades cerberus-check <porta/<guarda> | limiar <guarda> | vigilia/auditoria <guarda> | vigilia/coerencia <guarda>>  (ambiente: CERBERUS_DIR, CERBERUS_SKILL, CERBERUS_MOMENTO, CERBERUS_CTX)";
+
+/// `cerberusCheckCommand` (`src/commands/cerberus-check.ts:32`): roda uma guarda portada e imprime o veredito numa
+/// linha JSON. Só a Porta está portada; Limiar e Vigília respondem o uso, saída 2, até chegarem.
+fn check(args: &[String], ce: &CheckEnv, out: &mut dyn Write, err: &mut dyn Write) -> i32 {
+    let alvo = args.first().map(String::as_str).unwrap_or("");
+    let (cab, id) = alvo.split_once('/').unwrap_or((alvo, ""));
+    let veredito = (cab == "porta")
+        .then(|| cerberus_core::porta::guarda(id))
+        .flatten()
+        .map(|g| g(ce));
+    let mut s = Saida { out, err };
+    match veredito {
+        Some(v) => {
+            s.out(&py_dumps(&v.to_json(), None));
+            OK
+        }
+        None => {
+            s.warn(USO_CHECK);
+            USO
+        }
+    }
+}
+
 /// `cerberusCommand` (`src/commands/cerberus.ts:200`). Sem a ponte `rpc` (D1): ela recusa toda operação.
 fn executar(args: &[String], op: &Opcoes, out: &mut dyn Write, err: &mut dyn Write) -> i32 {
     let mut s = Saida { out, err };
@@ -455,12 +480,13 @@ fn main() -> ExitCode {
     if let Ok(bin) = std::env::current_exe() {
         op = op.com_bin_check(bin);
     }
-    let rc = executar(
-        &args,
-        &op,
-        &mut std::io::stdout().lock(),
-        &mut std::io::stderr().lock(),
-    );
+    let (mut out, mut err) = (std::io::stdout().lock(), std::io::stderr().lock());
+    let rc = if args.first().map(String::as_str) == Some("check") {
+        let ce = CheckEnv::do_ambiente(std::env::vars().collect(), &op.cwd);
+        check(&args[1..], &ce, &mut out, &mut err)
+    } else {
+        executar(&args, &op, &mut out, &mut err)
+    };
     ExitCode::from(u8::try_from(rc).unwrap_or(1))
 }
 
