@@ -3,8 +3,7 @@
 //! auditoria são do Hades (`hades_core::plugins`): aqui só se confere. Falha ao conferir vira `barra` com a evidência
 //! do que faltou, nunca `ok` calado.
 //!
-//! A quarta guarda, `ensaio` (sandbox bwrap), ainda não está portada: [`rodar`] responde `None` para ela e a CLI
-//! imprime o uso.
+//! A quarta guarda, `ensaio`, roda os scripts do plugin no sandbox bwrap de [`crate::ensaio`].
 
 use std::cmp::Ordering;
 use std::collections::{BTreeSet, HashMap};
@@ -27,6 +26,7 @@ use serde_json::{Map, Value};
 use sha2::{Digest, Sha256};
 
 use crate::check::{CheckEnv, CheckVerdict, Evid, ev, fnmatch_case, js_slice};
+use crate::ensaio::{Arquivo, EnsaioIn, ensaiar, escrita_declarada, rede_declarada};
 use crate::modelo::{EVID_MAX, Resultado, js_space, js_trim, py_repr};
 
 use Resultado::{Aviso, Barra, Ok as Passa};
@@ -56,7 +56,7 @@ const POLL: Duration = Duration::from_millis(5);
 pub const USO: &str = "uso: limiar.py commit-fixado|executavel|invariante|ensaio";
 
 /// `\s` do JS (sem o U+0085 do `\s` Unicode do `regex`, com o BOM).
-const JS_S: &str = r"\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}";
+pub(crate) const JS_S: &str = r"\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}";
 /// `\p{L}\p{N}_` (`src/lib/cerberus-limiar.ts:31`): `\w` e `\b` do Python são Unicode; a lookbehind é de 1 caractere.
 const W: &str = r"\p{L}\p{N}_";
 
@@ -321,6 +321,7 @@ fn git_txt(ce: &CheckEnv, pack: &str, args: &[&str]) -> R<String> {
 }
 
 struct Entry {
+    mode: String,
     blob: String,
 }
 
@@ -343,12 +344,13 @@ impl<'a> Tree<'a> {
             }
             let tab = ent.find('\t').unwrap_or(ent.len());
             let mut campos = ent[..tab].split(js_space).filter(|s| !s.is_empty());
-            let (_mode, kind, blob) = (campos.next(), campos.next(), campos.next());
+            let (mode, kind, blob) = (campos.next(), campos.next(), campos.next());
             if kind == Some("blob") {
                 let path = ent.get(tab + 1..).unwrap_or("").to_owned();
                 files.insert(
                     path,
                     Entry {
+                        mode: mode.unwrap_or("").to_owned(),
                         blob: blob.unwrap_or("").to_owned(),
                     },
                 );
@@ -1328,17 +1330,70 @@ fn invariante(ctx: &LimiarCtx, ce: &CheckEnv) -> R<Verdict> {
     ))
 }
 
+// ---------------------------------------------------------------- guarda: ensaio
+
+const ENSAIO_RUNS: [&str; 3] = ["post-install.sh", "doctor.sh", "checks/*.sh"];
+/// Arquivo maior que isto não é extraído para o ensaio (assets e afins).
+const ENSAIO_FILE_MAX: usize = 2_000_000;
+
+/// `ensaioInput` (`src/lib/cerberus-limiar.ts:510`): o `env/` do commit pronto para o ensaio, os scripts a rodar e
+/// os arquivos ao lado deles (sem assets, reference, `__pycache__`).
+fn ensaio_input(tree: &Tree) -> R<EnsaioIn> {
+    let prefix = tree.env_prefix()?.unwrap_or_default();
+    let env = tree.env_files()?;
+    let mut inp = EnsaioIn::default();
+    for rel in sorted(env.keys()) {
+        if ENV_SKIP.contains(&topo(&rel)) {
+            continue;
+        }
+        let path = format!("{prefix}{rel}");
+        let body = tree.read(&path, ENSAIO_FILE_MAX + 1)?;
+        if body.len() > ENSAIO_FILE_MAX {
+            continue;
+        }
+        let exec = tree.files.get(&path).is_some_and(|e| e.mode == "100755");
+        if ENSAIO_RUNS.iter().any(|pat| fnmatch_case(&rel, pat)) {
+            inp.scripts
+                .insert(rel.clone(), String::from_utf8_lossy(&body).into_owned());
+        }
+        inp.files.insert(
+            rel,
+            Arquivo {
+                body,
+                mode: if exec { 0o755 } else { 0o644 },
+            },
+        );
+    }
+    if let Some(pj) = env.get("plugin.json") {
+        let manifest = parse_json(
+            &tree.blob_text(pj)?,
+            &format!("plugin.json do commit {} ilegível", short(&tree.commit)),
+        )?;
+        inp.rede = rede_declarada(&manifest);
+        inp.escrita = escrita_declarada(&manifest);
+    }
+    Ok(inp)
+}
+
+/// `ensaio` (`src/lib/cerberus-limiar.ts:527`).
+fn ensaio(ctx: &LimiarCtx, ce: &CheckEnv) -> R<Verdict> {
+    let fontes = source_trees(ctx, ce)?;
+    let out = ensaiar(&ensaio_input(&fontes.next)?, ce)?;
+    Ok((out.resultado, out.evidencia, out.detalhe))
+}
+
 // ---------------------------------------------------------------- registro e borda
 
-/// `LIMIAR_GUARDS` (`src/lib/cerberus-limiar.ts:530`) sem o `ensaio`, que chega com o sandbox.
-const GUARDAS: [(&str, Guard); 3] = [
+/// `LIMIAR_GUARDS` (`src/lib/cerberus-limiar.ts:533`).
+const GUARDAS: [(&str, Guard); 4] = [
     ("commit-fixado", commit_fixado),
     ("executavel", executavel),
     ("invariante", invariante),
+    ("ensaio", ensaio),
 ];
 
 /// `rodarLimiar` (`src/lib/cerberus-limiar.ts:533`): o veredito da guarda; qualquer falha ao conferir vira barra com
-/// o que faltou. `None` para guarda desconhecida (e, por ora, `ensaio`).
+/// o que faltou. `None` para guarda desconhecida.
 pub fn rodar(guarda: &str, ce: &CheckEnv) -> Option<CheckVerdict> {
     let run = GUARDAS
         .iter()

@@ -50,7 +50,7 @@ fn contexto_incompleto_barra_e_diz_o_que_faltou() {
     let v = rodar("commit-fixado", &ce).unwrap();
     assert_eq!(v.resultado, Barra);
     assert!(v.evidencia[0].conferido.contains("plugin, commit, op"));
-    assert!(rodar("ensaio", &ce).is_none());
+    assert_eq!(rodar("ensaio", &ce).unwrap().resultado, Barra);
     assert!(rodar("nada", &ce).is_none());
 }
 

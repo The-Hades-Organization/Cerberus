@@ -9,6 +9,7 @@ pub mod check;
 pub mod config;
 pub mod ctx;
 pub mod efeito;
+pub mod ensaio;
 pub mod executor;
 pub mod limiar;
 pub mod modelo;
