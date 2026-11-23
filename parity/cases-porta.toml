@@ -3,6 +3,7 @@
 # Origem: os 66 casos do golden legado (loop/test/golden/legado/cerberus-porta-legado.json,
 # loop/test/ts/cerberus-porta-legado.test.ts). O repositório de cada caso é montado no HOME por parity/setup/porta-*.sh
 # (o `cwd` escolhe qual), e as respostas de `gh`/`devtunnel` vêm de $HOME/fix, lidas pelos stubs de parity/stubs.
+# O caso plano-aprovado.registro-ilegivel fica em cases-parser.toml (erro do parser normalizado nos dois lados).
 # Caminhos do contexto são relativos ao repositório do caso; o intervalo do segredo-diff é HEAD~1..HEAD.
 
 [[case]]
@@ -363,16 +364,6 @@ ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
 setup = "setup/porta-plano.sh"
 cwd = "r"
 env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-sumiu.json\"}" }
-compare = ["stdout", "stderr", "exit"]
-
-[[case]]
-id = "porta.plano-aprovado.registro-ilegivel"
-pending = "o texto do erro do parser de JSON é do Bun no TS e do serde no Rust; o resto do veredito é igual (o golden legado também normaliza esse trecho)"
-argv = ["check", "porta/plano-aprovado"]
-ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
-setup = "setup/porta-plano.sh"
-cwd = "r"
-env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-ilegivel.json\"}" }
 compare = ["stdout", "stderr", "exit"]
 
 [[case]]

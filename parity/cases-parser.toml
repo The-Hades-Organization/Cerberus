@@ -1,0 +1,31 @@
+# Casos cujo veredito traz o texto do erro do parser de JSON (Bun no TS, serde no Rust; divergência D5 do
+# plano). Roda à parte porque os dois lados passam por parity/normalizar-parser.sh, que troca esse trecho por
+# `<erro do parser>` como o golden legado: o TS por parity/ts-check-parser.ts e o Rust com `--rust parity/rust-parser.sh`.
+# Origem: um caso da Porta (cases-porta.toml) e dois do Limiar (cases-limiar.toml, update b-perfil); setups os de lá.
+
+[[case]]
+id = "porta.plano-aprovado.registro-ilegivel"
+argv = ["check", "porta/plano-aprovado"]
+ts_cmd = ["{cases_dir}/ts-check-parser.ts", "{skill}"]
+setup = "setup/porta-plano.sh"
+cwd = "r"
+env = { HADES_CERBERUS_PORTA_TUNEL_HOSTS = "*.devtunnels.ms", GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "push", CERBERUS_CTX = "{\"plano\":\"../plan-ilegivel.json\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-perfil-perfil-ilegivel-ou-env.pack-fora-do-pacote.executavel"
+# update b-perfil: perfil ilegível ou env.pack fora do pacote [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check-parser.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"ea0fc4ed4f9903da6b409d72468910b9afe8da3f\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-perfil-perfil-ilegivel-ou-env.pack-fora-do-pacote.invariante"
+# update b-perfil: perfil ilegível ou env.pack fora do pacote [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check-parser.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"ea0fc4ed4f9903da6b409d72468910b9afe8da3f\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]

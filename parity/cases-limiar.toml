@@ -1,0 +1,967 @@
+# Matriz de paridade do Limiar: `hades cerberus-check limiar <guarda>` (TS, Hades-Skill) contra `cerberus check limiar
+# <guarda>`. O lado TS passa por parity/ts-check.ts, como na Porta.
+# Origem: os 106 casos do golden legado (loop/test/golden/legado/cerberus-limiar-legado.json,
+# loop/test/ts/cerberus-limiar-legado.test.ts), na ordem do golden, e 3 do Ensaio (loop/test/ts/cerberus-ensaio.test.ts),
+# que precisam de bubblewrap. Os 2 casos de update b-perfil com o erro do parser no veredito (executavel e invariante)
+# ficam em cases-parser.toml.
+# Os estados de plugin (prévia do add, pacote instalado, update com as branches) saem do `hades plugins` da skill
+# fixada, por parity/limiar-estado.ts, em parity/gerado/limiar/; os setups setup/limiar-*.sh desempacotam o estado no
+# HOME do lado e aplicam a mutação do caso. Os commits têm autor e data fixos: os shas do contexto são estáveis.
+# Caminhos do contexto (`pack_dir`, `HADES_DATA` do "sem registro") são relativos ao HOME, que é o cwd do caso.
+
+[[case]]
+id = "limiar.add-com-a-previa.commit-fixado"
+# add com a prévia [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-a-previa.executavel"
+# add com a prévia [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-a-previa.invariante"
+# add com a prévia [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-a-previa-sem-sha256-num-executavel-falha-ao-conferir"
+# add com a prévia sem sha256 num executável: falha ao conferir
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x4.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-executavel-diferente-da-previa.commit-fixado"
+# add com executável diferente da prévia [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x1.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-executavel-diferente-da-previa.executavel"
+# add com executável diferente da prévia [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x1.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-executavel-diferente-da-previa.invariante"
+# add com executável diferente da prévia [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x1.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-executavel-fora-da-previa.commit-fixado"
+# add com executável fora da prévia [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x2.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-executavel-fora-da-previa.executavel"
+# add com executável fora da prévia [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x2.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-executavel-fora-da-previa.invariante"
+# add com executável fora da prévia [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x2.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-mudanca-solta-no-clone.commit-fixado"
+# add com mudança solta no clone [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-solto.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-mudanca-solta-no-clone.executavel"
+# add com mudança solta no clone [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-solto.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-mudanca-solta-no-clone.invariante"
+# add com mudança solta no clone [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-solto.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-pack-dir-no-contexto.commit-fixado"
+# add com pack_dir no contexto [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\",\"pack_dir\":\"data/plugins-staging/0a1b2c3d4e5f6a7b/lim\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-pack-dir-no-contexto.executavel"
+# add com pack_dir no contexto [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\",\"pack_dir\":\"data/plugins-staging/0a1b2c3d4e5f6a7b/lim\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-pack-dir-no-contexto.invariante"
+# add com pack_dir no contexto [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\",\"pack_dir\":\"data/plugins-staging/0a1b2c3d4e5f6a7b/lim\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-pack-dir-sem-previa-ao-lado.commit-fixado"
+# add com pack_dir sem prévia ao lado [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\",\"pack_dir\":\"nao-existe/lim\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-pack-dir-sem-previa-ao-lado.executavel"
+# add com pack_dir sem prévia ao lado [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\",\"pack_dir\":\"nao-existe/lim\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-pack-dir-sem-previa-ao-lado.invariante"
+# add com pack_dir sem prévia ao lado [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\",\"pack_dir\":\"nao-existe/lim\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-ref-movel.commit-fixado"
+# add com ref móvel [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"main\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-ref-movel.executavel"
+# add com ref móvel [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"main\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-ref-movel.invariante"
+# add com ref móvel [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"main\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-script-fora-da-previa-e-paginas-e-rotas-diferentes.commit-fixado"
+# add com script fora da prévia e páginas e rotas diferentes [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x3.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-script-fora-da-previa-e-paginas-e-rotas-diferentes.executavel"
+# add com script fora da prévia e páginas e rotas diferentes [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x3.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-script-fora-da-previa-e-paginas-e-rotas-diferentes.invariante"
+# add com script fora da prévia e páginas e rotas diferentes [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add-x3.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-sha-abreviado.commit-fixado"
+# add com sha abreviado [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-sha-abreviado.executavel"
+# add com sha abreviado [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-sha-abreviado.invariante"
+# add com sha abreviado [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-sha-sem-previa.commit-fixado"
+# add com sha sem prévia [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"0000000000000000000000000000000000000000\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-sha-sem-previa.executavel"
+# add com sha sem prévia [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"0000000000000000000000000000000000000000\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.add-com-sha-sem-previa.invariante"
+# add com sha sem prévia [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-add.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"0000000000000000000000000000000000000000\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.contexto-sem-plugin-commit-nem-op-barra-e-diz-o-que-faltou"
+# contexto sem plugin, commit nem op: barra e diz o que faltou
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-com-o-pacote-mexido-a-mao.commit-fixado"
+# enable com o pacote mexido à mão [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable-mexido.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-com-o-pacote-mexido-a-mao.executavel"
+# enable com o pacote mexido à mão [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable-mexido.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-com-o-pacote-mexido-a-mao.invariante"
+# enable com o pacote mexido à mão [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable-mexido.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-de-commit-que-ninguem-instalou.commit-fixado"
+# enable de commit que ninguém instalou [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable-local.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"e951dcde6f7c37b8db5f736ce299b0d73658c39b\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-de-commit-que-ninguem-instalou.executavel"
+# enable de commit que ninguém instalou [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable-local.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"e951dcde6f7c37b8db5f736ce299b0d73658c39b\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-de-commit-que-ninguem-instalou.invariante"
+# enable de commit que ninguém instalou [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable-local.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"e951dcde6f7c37b8db5f736ce299b0d73658c39b\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-do-que-foi-instalado.commit-fixado"
+# enable do que foi instalado [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-do-que-foi-instalado.executavel"
+# enable do que foi instalado [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-do-que-foi-instalado.invariante"
+# enable do que foi instalado [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-sem-registro-de-instalacao.commit-fixado"
+# enable sem registro de instalação [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}", HADES_DATA = "sem-log" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-sem-registro-de-instalacao.executavel"
+# enable sem registro de instalação [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}", HADES_DATA = "sem-log" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.enable-sem-registro-de-instalacao.invariante"
+# enable sem registro de instalação [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-enable.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"51d60a804637a75b3c28e932df28a85549fbea03\",\"op\":\"enable\"}", HADES_DATA = "sem-log" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.nome-de-plugin-invalido"
+# nome de plugin inválido
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"Lim/..\",\"commit\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"op\":\"add\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.op-desconhecido"
+# op desconhecido
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"op\":\"apagar\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.pacote-que-nao-existe.commit-fixado"
+# pacote que não existe [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"inexistente\",\"commit\":\"455707be850be7022870b451b449ab9b8cc9f1b5\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.pacote-que-nao-existe.executavel"
+# pacote que não existe [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"inexistente\",\"commit\":\"455707be850be7022870b451b449ab9b8cc9f1b5\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.pacote-que-nao-existe.invariante"
+# pacote que não existe [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"inexistente\",\"commit\":\"455707be850be7022870b451b449ab9b8cc9f1b5\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-cerberus.commit-fixado"
+# update b-cerberus [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3bdf1d0611a4100e3cdd54a14410fa3316a2022c\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-cerberus.executavel"
+# update b-cerberus [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3bdf1d0611a4100e3cdd54a14410fa3316a2022c\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-cerberus.invariante"
+# update b-cerberus [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3bdf1d0611a4100e3cdd54a14410fa3316a2022c\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-escreve.commit-fixado"
+# update b-escreve [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"9920e822f86b28fd8cf0e62eed33bd9855109cdc\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-escreve.executavel"
+# update b-escreve [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"9920e822f86b28fd8cf0e62eed33bd9855109cdc\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-escreve.invariante"
+# update b-escreve [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"9920e822f86b28fd8cf0e62eed33bd9855109cdc\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-fora-perfil-ilegivel-ou-env.pack-fora-do-pacote.commit-fixado"
+# update b-fora: perfil ilegível ou env.pack fora do pacote [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3fcb0ea1ed3915972d8e3b54c03660b55d5e00b7\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-fora-perfil-ilegivel-ou-env.pack-fora-do-pacote.executavel"
+# update b-fora: perfil ilegível ou env.pack fora do pacote [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3fcb0ea1ed3915972d8e3b54c03660b55d5e00b7\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-fora-perfil-ilegivel-ou-env.pack-fora-do-pacote.invariante"
+# update b-fora: perfil ilegível ou env.pack fora do pacote [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3fcb0ea1ed3915972d8e3b54c03660b55d5e00b7\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-guard.commit-fixado"
+# update b-guard [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"b0ec8831721c0aa5b76cff4cce670d23be451bdd\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-guard.executavel"
+# update b-guard [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"b0ec8831721c0aa5b76cff4cce670d23be451bdd\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-guard.invariante"
+# update b-guard [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"b0ec8831721c0aa5b76cff4cce670d23be451bdd\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-loop.commit-fixado"
+# update b-loop [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"edb189d5ba85b02638f77b49f5ffc11c9ee9c57e\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-loop.executavel"
+# update b-loop [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"edb189d5ba85b02638f77b49f5ffc11c9ee9c57e\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-loop.invariante"
+# update b-loop [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"edb189d5ba85b02638f77b49f5ffc11c9ee9c57e\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-manifesto.commit-fixado"
+# update b-manifesto [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"70bde60d212a6af84d2a52b7f48ba4f84a6229d9\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-manifesto.executavel"
+# update b-manifesto [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"70bde60d212a6af84d2a52b7f48ba4f84a6229d9\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-manifesto.invariante"
+# update b-manifesto [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"70bde60d212a6af84d2a52b7f48ba4f84a6229d9\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-mod.commit-fixado"
+# update b-mod [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3abce7edc6c1427827f9ed94b87f8d77d49b5eaa\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-mod.executavel"
+# update b-mod [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3abce7edc6c1427827f9ed94b87f8d77d49b5eaa\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-mod.invariante"
+# update b-mod [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"3abce7edc6c1427827f9ed94b87f8d77d49b5eaa\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-modo.commit-fixado"
+# update b-modo [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"8f9b3c7e54a3566ccb46d3bd3da278abba167759\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-modo.executavel"
+# update b-modo [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"8f9b3c7e54a3566ccb46d3bd3da278abba167759\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-modo.invariante"
+# update b-modo [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"8f9b3c7e54a3566ccb46d3bd3da278abba167759\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-neutro.commit-fixado"
+# update b-neutro [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"13f1cd9c6e415f624495bd1edc80a683a153ee0e\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-neutro.executavel"
+# update b-neutro [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"13f1cd9c6e415f624495bd1edc80a683a153ee0e\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-neutro.invariante"
+# update b-neutro [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"13f1cd9c6e415f624495bd1edc80a683a153ee0e\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-novo.commit-fixado"
+# update b-novo [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"90079c33c2e4923862020e3cbd09d27ed2179f5c\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-novo.executavel"
+# update b-novo [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"90079c33c2e4923862020e3cbd09d27ed2179f5c\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-novo.invariante"
+# update b-novo [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"90079c33c2e4923862020e3cbd09d27ed2179f5c\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-nucleo.commit-fixado"
+# update b-nucleo [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"4c34b163edad88dcd6b82e97a074fd3d4c756b43\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-nucleo.executavel"
+# update b-nucleo [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"4c34b163edad88dcd6b82e97a074fd3d4c756b43\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-nucleo.invariante"
+# update b-nucleo [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"4c34b163edad88dcd6b82e97a074fd3d4c756b43\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-pagina.commit-fixado"
+# update b-pagina [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"f94b6175214492d7a8a2ad54569d384dc3e7ff02\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-pagina.executavel"
+# update b-pagina [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"f94b6175214492d7a8a2ad54569d384dc3e7ff02\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-pagina.invariante"
+# update b-pagina [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"f94b6175214492d7a8a2ad54569d384dc3e7ff02\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-perfil-perfil-ilegivel-ou-env.pack-fora-do-pacote.commit-fixado"
+# update b-perfil: perfil ilegível ou env.pack fora do pacote [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"ea0fc4ed4f9903da6b409d72468910b9afe8da3f\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-settings.commit-fixado"
+# update b-settings [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"4dd3035a5b82acbaa945035ccd754dbfa68a8197\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-settings.executavel"
+# update b-settings [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"4dd3035a5b82acbaa945035ccd754dbfa68a8197\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-settings.invariante"
+# update b-settings [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"4dd3035a5b82acbaa945035ccd754dbfa68a8197\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-settings-hook.commit-fixado"
+# update b-settings-hook [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"6ba15ad22c1531daac9eb025acf96d7a1698e4fb\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-settings-hook.executavel"
+# update b-settings-hook [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"6ba15ad22c1531daac9eb025acf96d7a1698e4fb\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-b-settings-hook.invariante"
+# update b-settings-hook [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"6ba15ad22c1531daac9eb025acf96d7a1698e4fb\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-com-commit-nao-sha.commit-fixado"
+# update com commit não-sha [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"main\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-com-commit-nao-sha.executavel"
+# update com commit não-sha [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"main\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-com-commit-nao-sha.invariante"
+# update com commit não-sha [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"main\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-com-sha-que-o-pacote-nao-tem.commit-fixado"
+# update com sha que o pacote não tem [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"ffffffffffffffffffffffffffffffffffffffff\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-com-sha-que-o-pacote-nao-tem.executavel"
+# update com sha que o pacote não tem [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"ffffffffffffffffffffffffffffffffffffffff\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-com-sha-que-o-pacote-nao-tem.invariante"
+# update com sha que o pacote não tem [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"ffffffffffffffffffffffffffffffffffffffff\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-previsto.commit-fixado"
+# update previsto [commit-fixado]
+argv = ["check", "limiar", "commit-fixado"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"455707be850be7022870b451b449ab9b8cc9f1b5\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-previsto.executavel"
+# update previsto [executavel]
+argv = ["check", "limiar", "executavel"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"455707be850be7022870b451b449ab9b8cc9f1b5\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.update-previsto.invariante"
+# update previsto [invariante]
+argv = ["check", "limiar", "invariante"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/limiar-update.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"lim\",\"commit\":\"455707be850be7022870b451b449ab9b8cc9f1b5\",\"op\":\"update\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.uso-com-commit-fixado-x-stderr-e-codigo-2"
+# uso com ["commit-fixado","x"]: stderr e código 2
+argv = ["check", "limiar", "commit-fixado", "x"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.uso-com-nada-stderr-e-codigo-2"
+# uso com ["nada"]: stderr e código 2
+argv = ["check", "limiar", "nada"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.uso-com-stderr-e-codigo-2"
+# uso com []: stderr e código 2
+argv = ["check", "limiar"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.ensaio.escreve-no-d"
+# post-install que só escreve no $D passa e o $D real fica intacto
+argv = ["check", "limiar", "ensaio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/ensaio-escreve-d.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"ens\",\"commit\":\"24148645f509b45e3357c22c8355d2c6b3030219\",\"op\":\"enable\",\"pack_dir\":\"pack\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.ensaio.escreve-no-home"
+# escrita no HOME fora do $D barra e nomeia o caminho
+argv = ["check", "limiar", "ensaio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/ensaio-escreve-home.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"ens\",\"commit\":\"acdc9bb8959ca65441dac5725555dff5796098f3\",\"op\":\"enable\",\"pack_dir\":\"pack\"}" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "limiar.ensaio.script-falha"
+# script que falha no ensaio barra
+argv = ["check", "limiar", "ensaio"]
+ts_cmd = ["{cases_dir}/ts-check.ts", "{skill}"]
+setup = "setup/ensaio-falha.sh"
+env = { GIT_CONFIG_GLOBAL = "/dev/null", GIT_CONFIG_SYSTEM = "/dev/null", CERBERUS_MOMENTO = "plugin", CERBERUS_CTX = "{\"plugin\":\"ens\",\"commit\":\"8d0e9cb8f8a25700b752d2ec8fe327a0de0a8725\",\"op\":\"enable\",\"pack_dir\":\"pack\"}" }
+compare = ["stdout", "stderr", "exit"]

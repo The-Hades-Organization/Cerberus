@@ -33,8 +33,6 @@ jobs:
   parity:
     name: Paridade TS x Rust
     if: github.event_name != 'schedule'
-    # até o CLI do Cerberus entrar na main, a matriz roda e mostra as divergências sem travar o CI
-    continue-on-error: true
     timeout-minutes: 20
     runs-on: ubuntu-22.04
     steps:
@@ -60,6 +58,15 @@ jobs:
         run: cargo install --locked --git https://github.com/The-Hades-Organization/Hades-Core --tag "$HADES_CORE_TAG" --root "$RUNNER_TEMP/hades-parity" hades-parity
       - name: Compilar o Cerberus
         run: cargo build --locked -p cerberus-cli
+      - name: Bubblewrap para o ensaio do Limiar
+        run: |
+          # o AppArmor do Ubuntu 24.04 barra user namespace sem privilégio; no 22.04 a chave não existe
+          if [ -e /proc/sys/kernel/apparmor_restrict_unprivileged_userns ]; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          sudo apt-get update -q
+          sudo apt-get install -y bubblewrap
+          bwrap --unshare-pid --ro-bind / / -- true
       - name: Montar a skill
         run: |
           parity/montar-skill.sh hades-skill "$RUNNER_TEMP/skill"
@@ -87,6 +94,20 @@ jobs:
         run: >
           "$RUNNER_TEMP/hades-parity/bin/hades-parity" run
           --cases parity/cases-porta.toml
+          --ts "$RUNNER_TEMP/skill"
+          --rust target/debug/cerberus
+      - name: Matriz com o erro do parser normalizado
+        run: >
+          "$RUNNER_TEMP/hades-parity/bin/hades-parity" run
+          --cases parity/cases-parser.toml
+          --ts "$RUNNER_TEMP/skill"
+          --rust parity/rust-parser.sh
+      - name: Estados de plugin do Limiar
+        run: bun parity/limiar-estado.ts "$RUNNER_TEMP/skill" parity/gerado/limiar
+      - name: Matriz do Limiar e do Ensaio
+        run: >
+          "$RUNNER_TEMP/hades-parity/bin/hades-parity" run
+          --cases parity/cases-limiar.toml
           --ts "$RUNNER_TEMP/skill"
           --rust target/debug/cerberus
       - name: Concorrência TS x Rust
