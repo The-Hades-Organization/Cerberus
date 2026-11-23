@@ -1,0 +1,11 @@
+{
+  "titulo": "guarda de teste",
+  "momentos": [
+    "artefato"
+  ],
+  "tipo": "exec",
+  "cmd": [
+    "checks/t-grande.sh"
+  ],
+  "origem": "teste"
+}

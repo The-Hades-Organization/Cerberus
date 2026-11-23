@@ -1,0 +1,11 @@
+{
+  "titulo": "guarda de teste",
+  "momentos": [
+    "release"
+  ],
+  "tipo": "exec",
+  "cmd": [
+    "checks/t-outro-id.sh"
+  ],
+  "origem": "teste"
+}

@@ -1,0 +1,11 @@
+{
+  "titulo": "guarda de teste",
+  "momentos": [
+    "done"
+  ],
+  "tipo": "exec",
+  "cmd": [
+    "checks/t-saiu-1.sh"
+  ],
+  "origem": "teste"
+}

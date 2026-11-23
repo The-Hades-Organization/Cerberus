@@ -1,0 +1,12 @@
+{
+  "titulo": "guarda de teste",
+  "momentos": [
+    "release"
+  ],
+  "tipo": "exec",
+  "cmd": [
+    "checks/t-lenta.sh"
+  ],
+  "origem": "teste",
+  "timeoutS": 1
+}

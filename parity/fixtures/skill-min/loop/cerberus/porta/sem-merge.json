@@ -1,0 +1,8 @@
+{
+  "titulo": "Agente não faz merge de PR",
+  "momentos": [
+    "comentario"
+  ],
+  "tipo": "regra",
+  "origem": "regra de teste"
+}

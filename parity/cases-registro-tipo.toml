@@ -1,0 +1,22 @@
+# Registro inválido (skill montada com a variante `tipo`: parity/montar-skill.sh <skill> <dest> tipo).
+
+[[case]]
+id = "registro.tipo-validar"
+argv = ["guardas", "--validar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registro.tipo-avaliar"
+argv = ["avaliar", "push"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registro.tipo-guardas"
+argv = ["guardas"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]

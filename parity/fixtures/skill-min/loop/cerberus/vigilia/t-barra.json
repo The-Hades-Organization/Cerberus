@@ -1,0 +1,11 @@
+{
+  "titulo": "guarda de teste",
+  "momentos": [
+    "continuo"
+  ],
+  "tipo": "exec",
+  "cmd": [
+    "checks/t-barra.sh"
+  ],
+  "origem": "teste"
+}

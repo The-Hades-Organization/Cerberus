@@ -1,0 +1,9 @@
+{
+  "titulo": "Domínio fictício fora do texto publicado",
+  "momentos": [
+    "release",
+    "publicacao"
+  ],
+  "tipo": "emitida",
+  "origem": "hook de teste"
+}

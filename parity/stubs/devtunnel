@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Stub do `devtunnel` da matriz de paridade: nada sai da máquina. A resposta vem de
+# $PARITY_FIX/devtunnel/<subcomando>[-<subsubcomando>].{out,err,rc} (padrão de PARITY_FIX: $HOME/fix);
+# cada chamada fica em $PARITY_FIX/devtunnel.log. Sem arquivo de resposta: stderr e rc 1, como um devtunnel sem acesso.
+fix="${PARITY_FIX:-$HOME/fix}"
+printf '%s\n' "$*" >>"$fix/devtunnel.log" 2>/dev/null || true
+base="$fix/devtunnel/${1:-}"
+[ -n "${2:-}" ] && [ "${2#-}" = "${2}" ] && [ -e "$base-$2.out" -o -e "$base-$2.rc" ] && base="$base-$2"
+if [ ! -e "$base.out" ] && [ ! -e "$base.rc" ]; then
+  echo "devtunnel (stub de paridade): sem resposta para '$*'" >&2
+  exit 1
+fi
+[ -f "$base.out" ] && cat "$base.out"
+[ -f "$base.err" ] && cat "$base.err" >&2
+exit "$(cat "$base.rc" 2>/dev/null || echo 0)"

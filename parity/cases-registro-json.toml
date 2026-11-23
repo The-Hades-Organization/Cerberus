@@ -1,0 +1,16 @@
+# Registro inválido (skill montada com a variante `json`: parity/montar-skill.sh <skill> <dest> json).
+
+# a mensagem do JSON quebrado é a do parser de cada linguagem: só o código
+[[case]]
+id = "registro.json-avaliar"
+argv = ["avaliar", "push"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["exit"]
+
+[[case]]
+id = "registro.json-validar"
+argv = ["guardas", "--validar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["exit"]

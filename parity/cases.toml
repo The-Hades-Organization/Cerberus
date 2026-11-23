@@ -1,0 +1,589 @@
+# Matriz de paridade do Cerberus: `hades cerberus ...` (TS, Hades-Skill) contra o binário `cerberus`.
+# O argv é o do binário; o lado TS ganha o subcomando `cerberus` por `ts_cmd`. A skill (--ts e HADES_SKILL_DIR) é a
+# montada por parity/montar-skill.sh: registro e catálogo de parity/fixtures/skill-min (guardas de teste t-*).
+# Origem: o golden legado do TS (loop/test/golden/legado/cerberus-ts.json, loop/test/ts/cerberus-ts.test.ts). Cada caso
+# tem HOME próprio; o estado anterior (histórico, exceções) vem da fixture por parity/setup-estado.sh, gerado pelo
+# corpo do TS com instante fixo. `--dir /usr` faz o papel da pasta temporária do golden.
+
+[[case]]
+id = "leitura.modos"
+argv = ["modos"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.modos-json"
+argv = ["modos", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.guardas"
+argv = ["guardas"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.guardas-json"
+argv = ["guardas", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.guardas-validar"
+argv = ["guardas", "--validar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.guardas-cabeca"
+argv = ["guardas", "--cabeca", "porta"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.historico-vazio"
+argv = ["historico"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.historico-vazio-json"
+argv = ["historico", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.excecao-listar-vazio"
+argv = ["excecao", "listar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.excecao-listar-vazio-json"
+argv = ["excecao", "listar", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "leitura.estado-vazio-json"
+argv = ["estado", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.help"
+argv = ["-h"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.sem-argumento"
+argv = []
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.desconhecido"
+argv = ["bogus"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.avaliar-sem-momento"
+argv = ["avaliar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.avaliar-momento-invalido"
+argv = ["avaliar", "bogus"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.avaliar-cabeca-invalida"
+argv = ["avaliar", "push", "--cabeca", "x"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.registrar-sem-args"
+argv = ["registrar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.excecao-sem-sub"
+argv = ["excecao"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.excecao-abrir-sem-args"
+argv = ["excecao", "abrir"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.historico-limite-0"
+argv = ["historico", "--limite", "0"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.historico-limite-x"
+argv = ["historico", "--limite", "x"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.avaliar-ctx-invalido"
+argv = ["avaliar", "push", "--ctx", "Ruim=1"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "uso.avaliar-dir-sem-valor"
+argv = ["avaliar", "push", "--dir"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "config.modo-invalido"
+argv = ["avaliar", "release"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_VIGILIA = "talvez" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "config.modo-invalido-modos"
+argv = ["modos"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_VIGILIA = "talvez" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "config.timeout-fora-da-faixa"
+argv = ["avaliar", "release"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "0" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registrar.valido"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "continuo", "--resultado", "barra", "--evidencia", "regra conferida|loop/hooks/hades-guard.py", "--detalhe", "x", "--ctx", "a=1"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "registrar.sem-evidencia"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "continuo", "--resultado", "barra"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registrar.evidencia-sem-barra"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "continuo", "--resultado", "barra", "--evidencia", "so conferido"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registrar.momento-fora-do-registro"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "release", "--resultado", "ok", "--evidencia", "a|b"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registrar.resultado-invalido"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "continuo", "--resultado", "talvez", "--evidencia", "a|b"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registrar.guarda-exec"
+argv = ["registrar", "--cabeca", "porta", "--guarda", "t-o", "--momento", "push", "--resultado", "ok", "--evidencia", "a|b"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registrar.efeito-invalido"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "continuo", "--resultado", "ok", "--evidencia", "a|b", "--efeito", "x"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "registrar.efeito-e-contexto"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "continuo", "--resultado", "barra", "--evidencia", "a|b", "--efeito", "aviso", "--ctx", "k=v", "--dir", "/usr"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "registrar.ok-sem-detalhe"
+argv = ["registrar", "--cabeca", "vigilia", "--guarda", "excecao-so-dono", "--momento", "continuo", "--resultado", "ok", "--evidencia", "a|b"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.release"
+argv = ["avaliar", "release"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.release-json"
+argv = ["avaliar", "release", "--json", "--ctx", "pr=7"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.done"
+argv = ["avaliar", "done"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.done-json"
+argv = ["avaliar", "done", "--json", "--ctx", "pr=7"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.continuo"
+argv = ["avaliar", "continuo"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.continuo-json"
+argv = ["avaliar", "continuo", "--json", "--ctx", "pr=7"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.push"
+argv = ["avaliar", "push"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.push-json"
+argv = ["avaliar", "push", "--json", "--ctx", "pr=7"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.plugin"
+argv = ["avaliar", "plugin"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.plugin-json"
+argv = ["avaliar", "plugin", "--json", "--ctx", "pr=7"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.cabeca"
+argv = ["avaliar", "release", "--cabeca", "porta"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.modo-off"
+argv = ["avaliar", "release", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_VIGILIA = "off", HADES_CERBERUS_PORTA = "off" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.modo-avisa"
+argv = ["avaliar", "release", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_VIGILIA = "avisa", HADES_CERBERUS_PORTA = "avisa" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.modo-barra"
+argv = ["avaliar", "release", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_VIGILIA = "barra", HADES_CERBERUS_PORTA = "barra" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "avaliar.dir"
+argv = ["avaliar", "release", "--dir", "/usr", "--ctx", "pr=3"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "excecao.abrir"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "t-b", "--momento", "push", "--motivo", "teste de paridade", "--alvo", "pr=9"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "excecao.abrir-json"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "t-b", "--momento", "done", "--motivo", "teste de paridade", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "excecao.abrir-guarda-inexistente"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "nao-existe", "--momento", "push", "--motivo", "teste de paridade"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "excecao.abrir-momento-invalido"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "t-b", "--momento", "x", "--motivo", "teste de paridade"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "excecao.abrir-motivo-curto"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "t-b", "--momento", "push", "--motivo", "curto"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "excecao.abrir-sem-motivo"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "t-b", "--momento", "push"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "excecao.abrir-alvo-invalido"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "t-b", "--momento", "push", "--motivo", "teste de paridade", "--alvo", "Ruim"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "excecao.abrir-com-existentes"
+argv = ["excecao", "abrir", "--cabeca", "porta", "--guarda", "t-b", "--momento", "push", "--motivo", "teste de paridade"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "excecoes"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "excecao.alvo-errado-barra"
+argv = ["avaliar", "push", "--ctx", "pr=1"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "excecoes"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_PORTA = "barra" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "excecao.alvo-certo-libera"
+argv = ["avaliar", "push", "--ctx", "pr=9"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "excecoes"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_PORTA = "barra" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "excecao.uso-unico"
+argv = ["avaliar", "push", "--ctx", "pr=9"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "excecoes-usada"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_PORTA = "barra" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "excecao.sem-alvo-libera"
+argv = ["avaliar", "done", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "excecoes"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_PORTA = "barra" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "estado.excecao-listar"
+argv = ["excecao", "listar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.excecao-listar-json"
+argv = ["excecao", "listar", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.historico"
+argv = ["historico", "--limite", "500"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.historico-json"
+argv = ["historico", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.historico-filtrado"
+argv = ["historico", "--cabeca", "porta", "--efeito", "barra", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.historico-opcao-desconhecida"
+argv = ["historico", "--momento", "release"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.historico-limite-2"
+argv = ["historico", "--efeito", "aviso", "--limite", "2"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.estado-json"
+argv = ["estado", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "estado.estado-json-porta-barra"
+argv = ["estado", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "hist"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_PORTA = "barra" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "arquivo.linha-cortada"
+argv = ["historico", "--json", "--limite", "3"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "rotacao"
+setup = "setup-linha-cortada.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "arquivo.rotacao-historico"
+argv = ["historico", "--limite", "500"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "rotacao"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "arquivo.rotacao-ao-gravar"
+argv = ["avaliar", "push"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+fixture = "rotacao-cheia"
+setup = "setup-estado.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_HIST_KB = "16" }
+compare = ["stdout", "stderr", "exit", "files:work/**"]
+
+[[case]]
+id = "arquivo.excecoes-ilegivel"
+argv = ["excecao", "listar"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+setup = "setup-excecoes-ilegivel.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "arquivo.excecoes-nao-lista"
+argv = ["excecao", "listar", "--json"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+setup = "setup-excecoes-nao-lista.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3" }
+compare = ["stdout", "stderr", "exit"]
+
+[[case]]
+id = "arquivo.excecoes-ilegivel-avaliar"
+argv = ["avaliar", "push"]
+ts_cmd = ["{skill}/src/cli.ts", "cerberus"]
+setup = "setup-excecoes-ilegivel.sh"
+env = { HADES_CERBERUS_TIMEOUT_S = "3", HADES_CERBERUS_PORTA = "barra" }
+compare = ["stdout", "stderr", "exit"]

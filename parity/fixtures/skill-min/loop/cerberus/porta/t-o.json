@@ -1,0 +1,14 @@
+{
+  "titulo": "guarda de teste",
+  "momentos": [
+    "release",
+    "done",
+    "continuo",
+    "push"
+  ],
+  "tipo": "exec",
+  "cmd": [
+    "checks/t-o.sh"
+  ],
+  "origem": "teste"
+}

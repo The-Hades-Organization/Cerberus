@@ -1,0 +1,9 @@
+{
+  "titulo": "Exceção e modo do Cerberus só pelo dono",
+  "momentos": [
+    "continuo"
+  ],
+  "tipo": "emitida",
+  "origem": "hook de teste",
+  "descricao": "Barra a abertura de exceção vinda das ferramentas do agente."
+}

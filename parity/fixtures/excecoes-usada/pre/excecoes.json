@@ -1,0 +1,62 @@
+[
+ {
+  "id": "6a6be1580ee7",
+  "cabeca": "porta",
+  "guarda": "t-b",
+  "momento": "push",
+  "alvo": {
+   "pr": "9"
+  },
+  "motivo": "teste de paridade",
+  "por": "dono",
+  "origem": "cli",
+  "aberta": "2025-10-26T12:00:00Z",
+  "abertaTs": 1761480000,
+  "expira": 4102444800,
+  "usada": "ba9876543210",
+  "usadaEm": "2025-10-26T12:01:00Z"
+ },
+ {
+  "id": "ddaba60ee925",
+  "cabeca": "porta",
+  "guarda": "t-b",
+  "momento": "done",
+  "alvo": {},
+  "motivo": "teste de paridade",
+  "por": "dono",
+  "origem": "cli",
+  "aberta": "2025-10-26T12:00:00Z",
+  "abertaTs": 1761480000,
+  "expira": 4102444800,
+  "usada": null
+ },
+ {
+  "id": "8d285a476ccc",
+  "cabeca": "porta",
+  "guarda": "t-b",
+  "momento": "push",
+  "alvo": {},
+  "motivo": "exceção vencida",
+  "por": "dono",
+  "origem": "cli",
+  "aberta": "2025-10-26T12:00:00Z",
+  "abertaTs": 1761480000,
+  "expira": 1761480001,
+  "usada": null
+ },
+ {
+  "id": "ef4e7732ab92",
+  "cabeca": "porta",
+  "guarda": "t-b",
+  "momento": "push",
+  "alvo": {},
+  "motivo": "exceção já usada",
+  "por": "dono",
+  "origem": "painel",
+  "aberta": "2025-10-26T12:00:00Z",
+  "abertaTs": 1761480000,
+  "expira": 4102444800,
+  "usada": "0123456789ab",
+  "usadaEm": "2025-10-26T12:00:30Z"
+ }
+]
