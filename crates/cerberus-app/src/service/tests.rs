@@ -169,3 +169,27 @@ fn modos_e_configuracoes_dao_a_mesma_origem_com_hades_data_em_outra_pasta() {
         (Origem::ConfigEnv, Origem::ConfigEnv)
     );
 }
+
+#[test]
+fn agora_segue_hades_now_e_conta_o_barrado_das_10_18() {
+    let env = Env::empty().with("HADES_NOW", "2026-11-23T15:04:05Z");
+    let agora = agora_s(&env);
+    assert_eq!(
+        cerberus_core::modelo::now_iso(agora),
+        "2026-11-23T15:04:05Z"
+    );
+    let barrado: cerberus_core::modelo::Dict = serde_json::from_value(serde_json::json!({
+        "ts": "2026-11-23T10:18:00Z", "cabeca": "porta", "guarda": "segredo-no-diff", "efeito": "barra"
+    }))
+    .unwrap();
+    let k = crate::vm::kpis(&[barrado], agora);
+    let porta = k.iter().find(|k| k.cabeca == Cabeca::Porta).unwrap();
+    assert_eq!((porta.vereditos, porta.barrados), (1, 1));
+}
+
+#[test]
+fn agora_sem_hades_now_ou_invalido_usa_o_relogio() {
+    let antes = cerberus_core::modelo::now_secs();
+    assert!(agora_s(&Env::empty()) >= antes);
+    assert!(agora_s(&Env::empty().with("HADES_NOW", "ontem")) >= antes);
+}

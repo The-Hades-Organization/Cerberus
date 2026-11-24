@@ -7,6 +7,7 @@ use cerberus_core::modelo::{Ctx, Dict, Excecao, Veredito, now_secs};
 use cerberus_core::registro::Guarda;
 use cerberus_core::{Cerberus, Opcoes, PedidoExcecao};
 use hades_core::Env;
+use hades_core::clock;
 use hades_core::config::{self, ConfigStore};
 use hades_core::paths::skill_root;
 
@@ -54,6 +55,12 @@ fn cartoes_de_modo(cerberus: &Cerberus, env: &Env) -> Result<Vec<CartaoModo>, St
         .collect())
 }
 
+/// "Agora" das janelas de 24 h: `HADES_NOW` quando presente, como o `clockNow` (`src/lib/clock.ts:2`) das outras
+/// telas da Hades; sem ele, ou com valor inválido, o relógio do sistema.
+pub fn agora_s(env: &Env) -> f64 {
+    clock::now_ms(env).map_or_else(|_| now_secs(), |ms| ms as f64 / 1000.0)
+}
+
 pub fn carregar(opcoes: Opcoes) -> Result<Dados, String> {
     let env = opcoes.env.clone();
     let cerberus = Cerberus::abrir(opcoes);
@@ -69,7 +76,7 @@ pub fn carregar(opcoes: Opcoes) -> Result<Dados, String> {
         guardas,
         erros,
         modos: cartoes_de_modo(&cerberus, &env),
-        agora_s: now_secs(),
+        agora_s: agora_s(&env),
         excecoes: cerberus.excecoes().map_err(|e| e.to_string()),
         ttl_h: cfg_int(&cerberus.config(true), "HADES_CERBERUS_EXC_TTL_H", 1, 720)
             .map_err(|e| e.to_string()),
